@@ -39,7 +39,7 @@ class App extends Component{
         {this.props.children}
         <Snackbar open={isSnackbarOpen} message={snackbarText} autoHideDuration={6000} onRequestClose={this.closeSnackbar} onActionTouchTap={this.closeSnackbar} action={<img src={closeIcon} className="icon" />} />
         <Dialog
-          actions={[<FlatButton onTouchTap={this.closeLogoutDialog}>取消</FlatButton>, <FlatButton secondary onTouchTap={this.logout}>确认</FlatButton>]}
+          actions={[<FlatButton onTouchTap={this.closeLogoutDialog} label="取消" />, <FlatButton keyboardFocused secondary onTouchTap={this.logout} label="确认"/>]}
           modal={false}
           open={isLogoutDialogOpen}
           onRequestClose={this.closeLogoutDialog}

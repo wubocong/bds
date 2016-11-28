@@ -8,7 +8,6 @@ import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 
 import PersonIcon from '../../../images/person.png';
-import KeyIcon from '../../../images/key.png';
 import LogoutIcon from '../../../images/logout.png';
 import DownTri from '../../../images/down-tri.png';
 import UpTri from '../../../images/up-tri.png';
@@ -16,9 +15,6 @@ import { OPEN_LOGOUT_DIALOG, CHANGE_TITLE } from '../../App/constants';
 
 const menuItemStyle = {
   fontSize: 12
-};
-const studentMenuStyle = {
-  marginTop: '5px'
 };
 
 class StudentMenu extends Component {
@@ -31,7 +27,7 @@ class StudentMenu extends Component {
     };
   }
 
-  componentWillMount(){
+  componentWillMount() {
     const { dispatch } = this.props;
     dispatch({
       type: CHANGE_TITLE,
@@ -73,20 +69,16 @@ class StudentMenu extends Component {
     dispatch(push('/student/profile'));
   }
 
-  toChangePassword = () => {
-    this.closePopover();
-    const { dispatch } = this.props;
-    dispatch(push('/student/change-password'));
-  }
-
   render() {
     const { username } = this.props;
     const { isPopoverOpen, anchor } = this.state;
     return (
-      <div style={studentMenuStyle}>
+      <div style={{
+        marginTop: '5px'
+      }}>
         <FlatButton onTouchTap={this.togglePopover} style={{
           color: 'white'
-        }}>{username} <img src={ isPopoverOpen ? UpTri : DownTri } style={{
+        }}>{username} <img src={isPopoverOpen ? UpTri : DownTri} style={{
           verticalAlign: 'middle'
         }} /></FlatButton>
         <Popover
@@ -98,8 +90,7 @@ class StudentMenu extends Component {
           animation={PopoverAnimationVertical}
           >
           <Menu>
-            <MenuItem onTouchTap={this.toProfile} primaryText="账号信息" leftIcon={<img src={PersonIcon} />} style={menuItemStyle} />
-            <MenuItem onTouchTap={this.toChangePassword} primaryText="修改密码" leftIcon={<img src={KeyIcon} />} style={menuItemStyle} />
+            <MenuItem onTouchTap={this.toProfile} primaryText="学生信息" leftIcon={<img src={PersonIcon} />} style={menuItemStyle} />
             <Divider />
             <MenuItem onTouchTap={this.openLogoutDialog} primaryText="退出登录" leftIcon={<img src={LogoutIcon} />} style={menuItemStyle} />
           </Menu>

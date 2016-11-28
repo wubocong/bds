@@ -44,7 +44,11 @@ class Student extends Component {
     if (token) {
       return (
         <div className="student-page">
-          <AppBar title={title} iconElementLeft={path === '/student' ? <HomeIconButton href="/student" /> : <ReturnIconButton href="/student" />} iconElementRight={<StudentMenu username={user.name} />} />
+          <AppBar title={title} iconElementLeft={path === '/student' ? <HomeIconButton href="/student" /> : <ReturnIconButton href="/student" />} iconElementRight={<StudentMenu username={user.name} />} style={{
+            position: 'fixed',
+            left: 0,
+            top: 0
+          }}/>
           {this.props.children}
         </div>
       );

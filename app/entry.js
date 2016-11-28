@@ -17,6 +17,7 @@ import Login from './containers/Login/Login';
 import Student from './containers/Student/Student';
 import StudentInformation from './containers/Student/components/StudentInfomation.js';
 import StudentProfile from './containers/Student/components/StudentProfile';
+import StudentUpload from './containers/Student/components/StudentUpload';
 import Teacher from './containers/Teacher/Teacher';
 import TeacherOperation from './containers/Teacher/components/TeacherOperation';
 import TeacherProfile from './containers/Teacher/components/TeacherProfile';
@@ -44,6 +45,7 @@ ReactDOM.render(
             <IndexRoute component={StudentInformation} />
             <Route path="/student/profile" component={StudentProfile} />
             <Route path="/student/change-password" component={ChangePassword} />
+            <Route path="/student/upload" component={StudentUpload} />
           </Route>
           <Route path="/teacher" component={Teacher}>
             <IndexRoute component={TeacherOperation} />

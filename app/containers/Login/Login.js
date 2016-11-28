@@ -15,11 +15,6 @@ const loginPageStyle = {
     maxWidth: 400,
     padding: '0 30px'
 };
-const titleStyle = {
-    fontSize: '3rem',
-    textAlign: 'center',
-    marginBottom: '50px'
-};
 const radioButtonGroupStyle = {
     margin: '20px 0'
 };
@@ -30,9 +25,9 @@ class Login extends Component {
 
         super(props);
         this.state = {
-            account: 'ls',
+            account: 'xs',
             password: 'phy',
-            role: 'teacher',
+            role: 'student',
             isLogining: false
         };
     }
@@ -104,11 +99,17 @@ class Login extends Component {
             })
         }).then(response => {
 
+            this.setState({
+                isLogining: false
+            });
+
             // 验证失败
-            if (response.status !== 200) {
-                this.setState({
-                    isLogining: false
+            if (response.status === 500) {
+                dispatch({
+                    type: OPEN_SNACKBAR,
+                    snackbarText: '服务器错误！'
                 });
+            } else if (response.status !== 200) {
                 dispatch({
                     type: OPEN_SNACKBAR,
                     snackbarText: '请检查账号、密码或者身份是否正确！'
@@ -120,10 +121,6 @@ class Login extends Component {
                 response.json().then(json => {
                     const { token, user } = json;
 
-                    // 登录成功
-                    this.setState({
-                        isLogining: false
-                    });
 
                     // 保存token
                     Storage.setToken(token);
@@ -135,25 +132,26 @@ class Login extends Component {
                     dispatch(push('/' + user.role));
                 });
             }
-        },
-
-            // 网络错误
-            error => {
-                this.setState({
-                    isLogining: false
-                });
-                dispatch({
-                    type: OPEN_SNACKBAR,
-                    snackbarText: '网络错误！请检查网络情况！'
-                });
+        }, error => { // 网络错误
+            this.setState({
+                isLogining: false
             });
+            dispatch({
+                type: OPEN_SNACKBAR,
+                snackbarText: '网络错误！请检查网络情况！'
+            });
+        });
     }
 
     render() {
         const { account, password, role, isLogining } = this.state;
         return (
-            <div style={loginPageStyle}>
-                <h1 style={titleStyle}>{SYSTEM_NAME}</h1>
+            <div className="fadeIn" style={loginPageStyle}>
+                <h1 style={{
+                    fontSize: '2.5rem',
+                    textAlign: 'center',
+                    marginBottom: '50px'
+                }}>{SYSTEM_NAME}</h1>
                 <TextField floatingLabelText="账号" defaultValue={account} fullWidth className="text-field" onChange={this.setAccount} />
                 <TextField type="password" floatingLabelText="密码" defaultValue={password} fullWidth className="text-field" onChange={this.setPassword} />
                 <RadioButtonGroup name="role" defaultSelected={role} style={radioButtonGroupStyle} onChange={this.setRole}>

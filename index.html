@@ -11,14 +11,14 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        font-family: "PingFang SC", "Lantinghei SC", "Microsoft Yahei", "Hiragino Sans GB", "Microsoft Sans Serif", "WenQuanYi Micro Hei";
       }
       html{
         font-size: 16px;
       }
-      /*body{
-        max-width: 800px;
-        margin: 0 auto;
-      }*/
+      body{
+        overflow-x: hidden;
+      }
       @keyframes circle{
         0%{
           transform: rotate(0);
@@ -26,6 +26,9 @@
         100%{
           transform: rotate(-360deg);
         }
+      }
+      .circle{
+        animation: circle 1.5s linear infinite;
       }
       .js-loading{
         animation: circle 1.5s linear infinite;
