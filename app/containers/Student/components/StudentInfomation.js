@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import Paper from 'material-ui/Paper';
 import { Step, Stepper, StepLabel } from 'material-ui/Stepper';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 
 import { CHANGE_TITLE } from '../../App/constants';
 import { SYSTEM_NAME } from '../../../constants';
@@ -27,6 +28,7 @@ class StudentInformation extends Component {
                     name: '宠物健康管家APP设计与开发',
                     desp: '现在越来越多人选择在家里养宠物，但是由于工作忙，照料宠物的时间很少。随着移动互联网和传感器的兴起，在宠物身上佩戴具有定位功能、身体指标监控的传感器，人可以在手机端随时查看宠物的位置、宠物的健康状态，以实现对宠物的健康管理。',
                     filepath: '',
+                    filename: '',
                     comments: [{
                         content: '指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见。',
                         time: 0
@@ -50,7 +52,7 @@ class StudentInformation extends Component {
         if (!defense) {
             user = Object.assign({}, user, {
                 defense: {
-                    status: 2,
+                    status: 0,
                     time: 0,
                     address: '答辩地址答辩地址答辩地址',
                     scopes: [{
@@ -67,9 +69,18 @@ class StudentInformation extends Component {
                 }
             });
         }
+        let activeStep;
+        if (!user.paper.filepath) {
+            activeStep = 0;
+        } else {
+            activeStep = 1;
+        }
+        if(user.defense.status === 2){
+          activeStep = 2;
+        }
         this.state = {
             user,
-            activeStep: user.defense.status
+            activeStep
         };
     }
 
@@ -115,18 +126,94 @@ class StudentInformation extends Component {
             let progressOne;
             let progressTwo;
             let progressThree;
-            
-            if(paper.filepath){
 
+            if (paper.filepath) {
+                progressOne = <div style={{
+                    margin: '20px 0'
+                }}>
+                    <a href={paper.filepath} target="_blank"><RaisedButton label={paper.filename} /></a>
+                    <a href={paper.filepath} target="_blank"><RaisedButton primary label="下载" /></a>
+                    <Link to="/student/upload"><RaisedButton secondary label="重新上传" /></Link>
+                </div>
+                if (defense.status === 0) {
+                    progressTwo = <Paper zDepth={1} style={{
+                        margin: '20px 0',
+                        padding: 20
+                    }}>
+                        <div style={{
+                            fontSize: '1rem',
+                            margin: '10px 0 20px 0'
+                        }}>答辩安排</div>
+                        <div style={{
+                            fontSize: '0.8rem'
+                        }}>请等待后续安排。</div>
+                    </Paper>
+                } else if (defense.status === 1) {
+                    const time = new Date(defense.time);
+                    const year = time.getFullYear();
+                    const month = time.getMonth() + 1;
+                    const date = time.getDate();
+                    const hour = time.getHours();
+                    const minute = time.getMinutes();
+
+                    progressTwo = <Paper zDepth={1} style={{
+                        margin: '20px 0',
+                        padding: 20
+                    }}>
+                        <div style={{
+                            fontSize: '1rem',
+                            margin: '10px 0 20px 0'
+                        }}>答辩安排</div>
+                        <div style={{
+                            fontSize: '0.8rem',
+                            lineHeight: '1.6rem'
+                        }}>
+                            答辩老师：{
+                                defense.scopes.map(scope => {
+                                    return ' ' + scope.name
+                                })
+                            }<br />
+                            时间：{year}年{month}月{date}日{hour}时{minute}分<br />
+                            地点：{defense.address}
+                        </div>
+                    </Paper>
+                } else if (defense.status === 2) {
+
+                  progressOne = '';
+
+                    let total = 0;
+                    for(let scope of defense.scopes){
+                      total += scope.sum;
+                    }
+                    let avarage = total / defense.scopes.length;
+                    progressTwo = <Paper zDepth={1} style={{
+                        margin: '20px 0',
+                        padding: 20
+                    }}>
+                        <div style={{
+                            fontSize: '1rem',
+                            marginBottom: 5,
+                            lineHeight: '1.5rem'
+                        }}>
+                          分数：{avarage}<br/>
+                          论文评价：
+                        </div>
+                        <div style={{
+                            fontSize: '0.8rem',
+                            paddingLeft: 20,
+                            lineHeight: '1.2rem'
+                        }}>{defense.remark}</div>
+                    </Paper>
+                }
             } else {
-              progressOne = <Link to="/student/upload"><RaisedButton primary label="上传论文" /></Link>
+                progressOne = <Link to="/student/upload"><RaisedButton primary label="上传论文" /></Link>
             }
 
             progressPaper = <Paper zDepth={2} style={{
                 margin: '20px 0',
                 padding: 20,
             }}>
-                <Stepper activeStep={activeStep}>
+                <Stepper zDepth={2} activeStep={activeStep}>
                     <Step>
                         <StepLabel>上传论文</StepLabel>
                     </Step>
@@ -139,7 +226,6 @@ class StudentInformation extends Component {
                 </Stepper>
                 {progressOne}
                 {progressTwo}
-                {progressThree}
             </Paper>
 
             if (paper.comments.length) {
