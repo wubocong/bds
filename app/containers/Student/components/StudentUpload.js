@@ -15,16 +15,10 @@ import { HOST } from '../../../constants';
 
 class StudentUpload extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isComfirmDialogOpen: false,
-      isLoadingDialogOpen: false,
-      filename: '',
-      file: null,
-      user: Storage.getUser()
-    };
-  }
+  state = {
+    isComfirmDialogOpen: false,
+    isLoadingDialogOpen: false
+  };
 
   // 判断是否已登录
   componentWillMount() {
@@ -47,23 +41,23 @@ class StudentUpload extends Component {
     });
   }
 
-  authFile = () => {
-    const { filename } = this.state;
-    const { dispatch } = this.props;
-    if (!filename) {
+  checkFile = (files) => {
+    if (!files[0]) {
       dispatch({
         type: OPEN_SNACKBAR,
         snackbarText: '请选择论文文件！'
       });
-    } else {
-      this.openComfirmDialog();
+      return false
     }
+    console.log(files[0].type)
+    
   }
 
   openComfirmDialog = () => {
     this.setState({
       isComfirmDialogOpen: true
     });
+    return false;
   }
 
   closeComfirmDialog = () => {
@@ -84,47 +78,32 @@ class StudentUpload extends Component {
     });
   }
 
-  upload = () => {
-    const {user, file} = this.state;
-    const token = Storage.getToken();
-
+  uploadStart = () => {
+    this.reactUploadFile.manuallyUploadFile()
     this.closeComfirmDialog();
     this.openLoadingDialog();
+  }
+  uploadSuccess = (resp) => {
+    console.log(resp)
     const { dispatch } = this.props;
 
-    fetch(`${HOST}/papers/file/583ad38560dbd04f6216841a`, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'authorization': `bearer ${token}`
-      },
-      body: new FormData().append('paper', new FileReader(file)),
-      mode: 'no-cors'
-    }).then(response => {
-      console.log(response);
-    });
-
-    // this.setState({
-    //     filename: ''
-    // });
     this.closeLoadingDialog();
-    // dispatch({
-    //     type: OPEN_SNACKBAR,
-    //     snackbarText: '上传成功！'
-    // });
+    dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '上传成功！'
+    });
   }
 
   render() {
-
     const { isComfirmDialogOpen, isLoadingDialogOpen, filename } = this.state;
     const token = Storage.getToken();
     const options = {
-      baseUrl: `${HOST}/papers/file/583ad38560dbd04f6216841a`,
+      baseUrl: `${HOST}/papers/file/584140c1a0179e0c364d6396`,
       fileFieldName: 'paper',
       requestHeaders: { authorization: `bearer ${token}` },
-      uploadSuccess: (resp) => {
-        console.log(resp)
-      }
+      didChoose: this.checkFile,
+      beforeUpload: this.openComfirmDialog,
+      uploadSuccess: this.uploadSuccess
     }
     return (
       <div className="leftIn" style={{
@@ -132,41 +111,29 @@ class StudentUpload extends Component {
         maxWidth: 500,
         padding: '0 30px'
       }}>
-        <ReactUploadFile options={options}
-          chooseFile={
-            <div style={{
-              width: '100%',
-              fontSize: '0.9rem',
-              padding: '0 10px',
-              outline: 'none',
-              textAlign: 'center',
-              borderBottom: '1px solid gray',
-              padding: '5px'
-            }} />
+        <ReactUploadFile
+          ref={(reactUploadFile) => { this.reactUploadFile = reactUploadFile; } }
+          options={options}
+          chooseFileButton={
+            <RaisedButton label="选择" />
           }
-          uploadFile={
-            <div style={{
-              margin: '20px 0',
-              textAlign: 'center'
-            }}>
-              <Link to="/student">
-                <RaisedButton label="取消" />
-              </Link>
-              <RaisedButton primary label="上传" onTouchTap={this.authFile} />
-            </div>
+          uploadFileButton={
+            <RaisedButton primary label="上传" />
           }
-        />
-                
+          />
+        <Link to="/student">
+          <RaisedButton label="取消" />
+        </Link>
         <Dialog
-            actions={[<FlatButton onTouchTap={this.closeComfirmDialog} label="取消" />, <FlatButton secondary onTouchTap={this.upload} label="确认" />]}
-            open={isComfirmDialogOpen}
-            onRequestClose={this.closeComfirmDialog}
-            >确定上传论文?
+          actions={[<FlatButton onTouchTap={this.closeComfirmDialog} label="取消" />, <FlatButton secondary onTouchTap={this.uploadStart} label="确认" />]}
+          open={isComfirmDialogOpen}
+          onRequestClose={this.closeComfirmDialog}
+          >确定上传论文?
         </Dialog>
         <Dialog
           open={isLoadingDialogOpen}
           onRequestClose={this.closeLoadingDialog}
-        >
+          >
           <div className="circle" style={{
             textAlign: 'center'
           }}>
