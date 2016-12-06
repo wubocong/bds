@@ -10,11 +10,10 @@ import Divider from 'material-ui/Divider';
 
 import { OPEN_LOGOUT_DIALOG } from '../../App/constants';
 import Storage from '../../../models/Storage';
-import UpTri from '../../../images/up-tri.png';
-import DownTri from '../../../images/down-tri.png';
+import UpTri from '../../../images/up-tri16.png';
+import DownTri from '../../../images/down-tri16.png';
 import PersonIcon from '../../../images/person.png';
 import LogoutIcon from '../../../images/logout.png';
-import KeyIcon from '../../../images/key.png';
 
 const menuItemStyle = {
   fontSize: 12
@@ -84,8 +83,7 @@ class AdminMenu extends Component {
           animation={PopoverAnimationVertical}
           >
           <Menu>
-            <MenuItem onTouchTap={this.toProfile} style={menuItemStyle} leftIcon={<img src={PersonIcon} />} primaryText="账号信息" />
-            <MenuItem onTouchTap={this.toChangePassword} style={menuItemStyle} leftIcon={<img src={KeyIcon} />} primaryText="修改密码" />
+            <MenuItem onTouchTap={this.toProfile} style={menuItemStyle} leftIcon={<img src={PersonIcon} />} primaryText="管理员信息" />
             <Divider />
             <MenuItem onTouchTap={this.showLogoutDialog} style={menuItemStyle} leftIcon={<img src={LogoutIcon} />} primaryText="退出登录" />
           </Menu>

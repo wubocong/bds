@@ -1,39 +1,26 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import AppBar from 'material-ui/AppBar';
 
 import Storage from '../../models/Storage';
-import HomeIconButton from '../../components/HomeIconButton';
-import ReturnIconButton from '../../components/ReturnIconButton';
-import TeacherMenu from './components/TeacherMenu';
 
-class Teacher extends Component{
-
-  constructor(props){
-    super(props);
-    this.state = {
-      user: Storage.getUser()
-    };
-  }
+class Teacher extends Component {
 
   // 检查是否已登录
-  componentWillMount(){
-    const { user } = this.state;
+  componentWillMount() {
     const { dispatch } = this.props;
     const token = Storage.getToken();
-    if(!token){
+    const user = Storage.getUser();
+    if (!token) {
       dispatch(push('/'));
-    } else{
-      dispatch(push('/' + user.role));
+    } else {
+      // dispatch(push('/' + user.role));
     }
   }
 
-  render(){
-    const { title, path } = this.props;
+  render() {
     return (
       <div>
-        <AppBar title={title} iconElementLeft={path === '/teacher' ? <HomeIconButton href="/teacher" /> : <ReturnIconButton href="/teacher" />} iconElementRight={<TeacherMenu />} />
         {this.props.children}
       </div>
     );
@@ -41,10 +28,7 @@ class Teacher extends Component{
 }
 
 const mapStateToProps = state => {
-  return {
-    title: state.app.title,
-    path: state.routing.locationBeforeTransitions.pathname
-  };
+  return {};
 };
 const mapDispatchToProps = dispatch => {
   return {

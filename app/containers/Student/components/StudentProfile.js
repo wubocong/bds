@@ -57,6 +57,9 @@ class StudentProfile extends Component {
         }
       })
     }).then(response => {
+
+      // 更新token时间戳
+      Storage.updateTokenTime();
       if (response.status === 200) {
         this.setState({
           isChangeDialogOpen: false,
@@ -71,17 +74,24 @@ class StudentProfile extends Component {
           email: newEmail
         });
         Storage.setUser(newUser);
-        Storage.updateTokenTime();
         this.setState({
           user: newUser
         });
       } else {
+        this.setState({
+          isChangeDialogOpen: false,
+          isComfirmDialogOpen: false
+        });
         dispatch({
           type: OPEN_SNACKBAR,
           snackbarText: '修改失败！'
         });
       }
     }, error => {
+      this.setState({
+        isChangeDialogOpen: false,
+        isComfirmDialogOpen: false
+      });
       dispatch({
         type: OPEN_SNACKBAR,
         snackbarText: '网络错误！'
@@ -163,16 +173,16 @@ class StudentProfile extends Component {
       }} className="leftIn">
         <TextField style={{
           width: '50%'
-        }} floatingLabelText="姓名" value={user.name || '无'} disabled />
+        }} floatingLabelText="姓名" value={user.name || '未录入'} disabled />
         <TextField style={{
           width: '50%'
         }} floatingLabelText="性别" value={user.gender ? '男' : '女'} disabled />
-        <TextField fullWidth floatingLabelText="学号" value={user.account || '无'} disabled />
-        <TextField fullWidth floatingLabelText="学校" value={user.university || '无'} disabled />
-        <TextField fullWidth floatingLabelText="学院或系" value={user.school || '无'} disabled />
-        <TextField fullWidth floatingLabelText="年级 - 专业 - 班级" value={(user.grade || '0000') + '级 - ' + (user.major || '无') + ' - ' + (user.clazz || '无')} disabled />
-        <TextField fullWidth floatingLabelText="电话" value={user.phone || '无'} disabled />
-        <TextField fullWidth floatingLabelText="邮箱" value={user.email || '无'} disabled />
+        <TextField fullWidth floatingLabelText="学号" value={user.account} disabled />
+        <TextField fullWidth floatingLabelText="学校" value={user.university || '未录入'} disabled />
+        <TextField fullWidth floatingLabelText="学院或系" value={user.school || '未录入'} disabled />
+        <TextField fullWidth floatingLabelText="年级 - 专业 - 班级" value={(user.grade || '0000') + '级 - ' + (user.major || '未录入') + ' - ' + (user.clazz || '未录入')} disabled />
+        <TextField fullWidth floatingLabelText="电话" value={user.phone || '未设置'} disabled />
+        <TextField fullWidth floatingLabelText="邮箱" value={user.email || '未设置'} disabled />
         <div style={{
           textAlign: 'center',
           margin: '20px 0 0 20px'

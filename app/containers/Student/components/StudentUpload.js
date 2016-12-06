@@ -142,31 +142,28 @@ class StudentUpload extends Component {
               textAlign: 'center',
               borderBottom: '1px solid gray',
               padding: '5px'
-            }} />
+            }}>123</div>
           }
           uploadFile={
             <div style={{
               margin: '20px 0',
               textAlign: 'center'
             }}>
-              <Link to="/student">
-                <RaisedButton label="取消" />
-              </Link>
               <RaisedButton primary label="上传" onTouchTap={this.authFile} />
             </div>
           }
-        />
-                
+          />
+
         <Dialog
-            actions={[<FlatButton onTouchTap={this.closeComfirmDialog} label="取消" />, <FlatButton secondary onTouchTap={this.upload} label="确认" />]}
-            open={isComfirmDialogOpen}
-            onRequestClose={this.closeComfirmDialog}
-            >确定上传论文?
+          actions={[<FlatButton onTouchTap={this.closeComfirmDialog} label="取消" />, <FlatButton secondary onTouchTap={this.upload} label="确认" />]}
+          open={isComfirmDialogOpen}
+          onRequestClose={this.closeComfirmDialog}
+          >确定上传论文?
         </Dialog>
         <Dialog
           open={isLoadingDialogOpen}
           onRequestClose={this.closeLoadingDialog}
-        >
+          >
           <div className="circle" style={{
             textAlign: 'center'
           }}>

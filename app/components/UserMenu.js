@@ -1,27 +1,26 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import { Link } from 'react-router';
-import FlatButton from 'material-ui/FlatButton';
+import { push } from 'react-router-redux';
 import { Popover, PopoverAnimationVertical } from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 
-import { OPEN_LOGOUT_DIALOG } from '../../App/constants';
-import Storage from '../../../models/Storage';
-import UpTri from '../../../images/up-tri.png';
-import DownTri from '../../../images/down-tri.png';
-import PersonIcon from '../../../images/person.png';
-import LogoutIcon from '../../../images/logout.png';
-import KeyIcon from '../../../images/key.png';
+import { OPEN_LOGOUT_DIALOG } from '../containers/App/constants';
+import Storage from '../models/Storage';
+import TeacherIcon from '../images/teacher100.png';
+import StudentIcon from '../images/student100.png';
+import AdminIcon from '../images/admin100.png';
+import UpTri from '../images/up-tri16.png';
+import DownTri from '../images/down-tri16.png'
 
 const menuItemStyle = {
-  fontSize: 12
-};
+  fontSize: '0.75rem',
+  textAlign: 'right'
+}
 
-class TeacherMenu extends Component {
-
+class UserMenu extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -54,28 +53,42 @@ class TeacherMenu extends Component {
   toProfile = () => {
     this.closePopover();
     const { dispatch } = this.props;
-    dispatch(push('/teacher/profile'));
-  }
-
-  toChangePassword = () => {
-    this.closePopover();
-    const { dispatch } = this.props;
-    dispatch(push('/teacher/change-password'));
+    const user = Storage.getUser();
+    dispatch(push(`/${user.role}/profile`));
   }
 
   render() {
     const user = Storage.getUser();
     const { isPopoverOpen, anchor } = this.state;
+    let defaultAvatar;
+    if(user.role === 'admin'){
+      defaultAvatar = AdminIcon;
+    } else if(user.role == 'student'){
+      defaultAvatar = StudentIcon;
+    } else{
+      defaultAvatar = TeacherIcon;
+    }
     return (
       <div style={{
-        marginTop: 5
+        margin: '10px 0'
       }}>
-        <FlatButton onTouchTap={this.openPopover} style={{
-          color: 'white'
-        }}>{user.name} <img style={{
-          verticalAlign: 'middle'
-        }} src={isPopoverOpen ? UpTri : DownTri} /></FlatButton>
+        <div onTouchTap={this.openPopover} style={{
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center'
+        }}>
+          <img src={user.avatar || defaultAvatar} style={{
+            width: '30px',
+            height: '30px',
+            borderRadius: '3px',
+            backgroundColor: 'white'
+          }} />
+          <img src={isPopoverOpen ? UpTri : DownTri} />
+        </div>
         <Popover
+          style={{
+            marginTop: 10
+          }}
           open={isPopoverOpen}
           anchorEl={anchor}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -84,10 +97,9 @@ class TeacherMenu extends Component {
           animation={PopoverAnimationVertical}
           >
           <Menu>
-            <MenuItem onTouchTap={this.toProfile} style={menuItemStyle} leftIcon={<img src={PersonIcon} />} primaryText="账号信息" />
-            <MenuItem onTouchTap={this.toChangePassword} style={menuItemStyle} leftIcon={<img src={KeyIcon} />} primaryText="修改密码" />
+            <MenuItem onTouchTap={this.toProfile} style={menuItemStyle} primaryText={user.name} />
             <Divider />
-            <MenuItem onTouchTap={this.showLogoutDialog} style={menuItemStyle} leftIcon={<img src={LogoutIcon} />} primaryText="退出登录" />
+            <MenuItem onTouchTap={this.showLogoutDialog} style={menuItemStyle} primaryText="退出登录" />
           </Menu>
         </Popover>
       </div>
@@ -104,4 +116,4 @@ const mapDispatchToProps = dispatch => {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TeacherMenu);
+export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

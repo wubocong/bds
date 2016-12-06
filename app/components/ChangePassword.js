@@ -1,193 +1,169 @@
 import React, { Component } from 'react';
+import { push } from 'react-router-redux';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 
+import { CONFIG_APPBAR, OPEN_SNACKBAR, OPEN_LOADING_DIALOG, CLOSE_LOADING_DIALOG } from '../containers/App/constants';
+import ReturnIconButton from './ReturnIconButton';
 import Storage from '../models/Storage';
-import { CHANGE_TITLE, OPEN_SNACKBAR } from '../containers/App/constants';
-import { HOST } from '../constants';
-
-const buttonContainerStyle = {
-    marginTop: 30,
-    textAlign: 'center'
-}
-const buttonStyle = {
-    margin: '10px'
-};
 
 class ChangePassword extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            user: Storage.getUser(),
-            oldPassword: '',
-            newPassword: '',
-            repeatNewPassword: '',
-            isDialogOpen: false
-        };
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      oldPassword: '',
+      newPassword: '',
+      repeatPassword: '',
+      isComfirmDialogOpen: false
+    };
+  }
 
-    // 是否已登录
-    componentWillMount() {
-        const token = Storage.getToken();
-        const { dispatch } = this.props;
-        if (!token) {
-            dispatch(push('/'));
-        } else {
-            dispatch({
-                type: CHANGE_TITLE,
-                title: '修改密码'
-            });
-        }
-    }
+  componentWillMount() {
+    const { dispatch } = this.props;
+    const user = Storage.getUser();
+    dispatch({
+      type: CONFIG_APPBAR,
+      appbarConfig: {
+        title: '修改密码',
+        isAppbarOpen: true,
+        appbarLeftElement: <ReturnIconButton href={'/' + user.role + '/profile'} />,
+        appbarRightElement: null
+      }
+    });
+  }
 
-    setOldPassword = event => {
-        this.setState({
-            oldPassword: event.target.value
-        });
-    }
+  setOldPassword = event => {
+    this.setState({
+      oldPassword: event.target.value
+    });
+  }
 
-    setNewPassword = event => {
-        this.setState({
-            newPassword: event.target.value
-        });
-    }
+  setNewPassword = event => {
+    this.setState({
+      newPassword: event.target.value
+    });
+  }
 
-    setRepeatNewPassword = event => {
-        this.setState({
-            repeatNewPassword: event.target.value
-        });
-    }
+  setRepeatPassword = event => {
+    this.setState({
+      repeatPassword: event.target.value
+    });
+  }
 
-    comparePassword = () => {
-        const { newPassword, repeatNewPassword } = this.state;
-        const { dispatch } = this.props;
-        if (newPassword && repeatNewPassword) {
-            if (newPassword !== repeatNewPassword) {
-                dispatch({
-                    type: OPEN_SNACKBAR,
-                    snackbarText: '两次密码不一致，请重新输入！'
-                });
-            }
-        }
-    }
+  openLoadingDialog = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: OPEN_LOADING_DIALOG
+    });
+  }
 
-    changePassword = () => {
-        this.closeDialog();
-        const { oldPassword, newPassword, repeatNewPassword, user } = this.state;
-        const { dispatch } = this.props;
-        if (!oldPassword) {
-            dispatch({
-                type: OPEN_SNACKBAR,
-                snackbarText: '请输入原密码！'
-            });
-        } else if (!newPassword) {
-            dispatch({
-                type: OPEN_SNACKBAR,
-                snackbarText: '请输入新密码！'
-            });
-        } else if (!repeatNewPassword) {
-            dispatch({
-                type: OPEN_SNACKBAR,
-                snackbarText: '请重复输入新密码！'
-            });
-        } else if (newPassword !== repeatNewPassword) {
-            dispatch({
-                type: OPEN_SNACKBAR,
-                snackbarText: '两次密码输入不一致，请重新输入！'
-            });
-        } else {
-            const { user } = this.state;
-            const token = Storage.getToken();
-            fetch(`${HOST}/users/password/${user._id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authorization': `bearer ${token}`
-                },
-                body: JSON.stringify({
-                    oldPassword,
-                    newPassword,
-                    role: user.role
-                })
-            }).then(response => {
-                if (response.status === 200) {
-                    dispatch({
-                        type: OPEN_SNACKBAR,
-                        snackbarText: '修改成功！'
-                    });
-                    dispatch(push('/' + user.role));
-                    Storage.updateTokenTime();
-                } else if (response.status === 422 || response.status === 401) {
-                    dispatch({
-                        type: OPEN_SNACKBAR,
-                        snackbarText: '原密码错误！'
-                    });
-                } else {
-                    dispatch({
-                        type: OPEN_SNACKBAR,
-                        snackbarText: '修改失败！请重试！'
-                    });
-                }
-            }, error => {
-                dispatch({
-                    type: OPEN_SNACKBAR,
-                    snackbarText: '网络错误！请检查网络连接是否正常！'
-                });
-            });
-        }
-    }
+  closeLoadingDialog = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: CLOSE_LOADING_DIALOG
+    });
+  }
 
-    openDialog = () => {
-        this.setState({
-            isDialogOpen: true
-        });
-    }
+  openComfirmDialog = () => {
+    this.setState({
+      isComfirmDialogOpen: true
+    });
+  }
 
-    closeDialog = () => {
-        this.setState({
-            isDialogOpen: false
-        });
-    }
+  closeComfirmDialog = () => {
+    this.setState({
+      isComfirmDialogOpen: false
+    });
+  }
 
-    render() {
-        const {user, oldPassword, newPassword, repeatNewPassword, isDialogOpen } = this.state;
-        return (
-            <div style={{
-                maxWidth: 400,
-                margin: '100px auto 20px auto',
-                padding: '0 30px'
-            }} className="leftIn">
-                <TextField fullWidth floatingLabelText="账号" defaultValue={user.account} disabled />
-                <TextField onChange={this.setOldPassword} type="password" defaultValue={oldPassword} fullWidth floatingLabelText="原密码" />
-                <TextField onChange={this.setNewPassword} onBlur={this.comparePassword} type="password" defaultValue={newPassword} fullWidth floatingLabelText="新密码" />
-                <TextField onChange={this.setRepeatNewPassword} onBlur={this.comparePassword} type="password" defaultValue={repeatNewPassword} fullWidth floatingLabelText="重复新密码" />
-                <div style={buttonContainerStyle}>
-                    <Link to={'/' + user.role + '/profile'}><RaisedButton style={buttonStyle} label="取消" /></Link>
-                    <RaisedButton onTouchTap={this.openDialog} style={buttonStyle} secondary label="确认" />
-                </div>
-                <Dialog
-                    actions={[<FlatButton keyboardFocused onTouchTap={this.closeDialog} label="取消" />, <FlatButton secondary onTouchTap={this.changePassword} label="确认" />]}
-                    open={isDialogOpen}
-                    onRequestClose={this.closeDialog}
-                    >确定修改密码?</Dialog>
-            </div>
-        );
+  beforeChange = () => {
+    const { oldPassword, newPassword, repeatPassword } = this.state;
+    const { dispatch } = this.props;
+    if (!oldPassword) {
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '请输入原密码！'
+      });
+    } else if (!newPassword) {
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '请输入新密码！'
+      });
+    } else if (!repeatPassword) {
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '请重复输入输入新密码！'
+      });
+    } else if (newPassword !== repeatPassword) {
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '两次密码不一致！'
+      });
+    } else {
+      this.openComfirmDialog();
     }
+  }
+
+  changePassword = () => {
+    this.closeComfirmDialog();
+    this.openLoadingDialog();
+    const user = Storage.getUser();
+    const { dispatch } = this.props;
+    setTimeout(() => {
+      this.closeLoadingDialog();
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '修改成功'
+      });
+      dispatch(push('/' + user.role + '/profile'));
+    }, 5000);
+  }
+
+  render() {
+    const user = Storage.getUser();
+    const { oldPassword, newPassword, repeatPassword, isComfirmDialogOpen} = this.state;
+    return (
+      <div className="leftIn" style={{
+        margin: '80px auto 30px auto',
+        maxWidth: 450,
+        padding: '0 20px'
+      }}>
+        <TextField fullWidth disabled floatingLabelText="账号" value={user.account} />
+        <TextField type="password" fullWidth floatingLabelText="原密码" value={oldPassword} onChange={this.setOldPassword} />
+        <TextField type="password" fullWidth floatingLabelText="新密码" value={newPassword} onChange={this.setNewPassword} />
+        <TextField type="password" fullWidth floatingLabelText="重复新密码" value={repeatPassword} onChange={this.setRepeatPassword} />
+        <div style={{
+          margin: '20px 0',
+          textAlign: 'center'
+        }}>
+          <Link to={'/' + user.role + '/profile'}>
+            <RaisedButton label="取消" />
+          </Link>
+          <RaisedButton onTouchTap={this.beforeChange} secondary label="确认" />
+        </div>
+        <Dialog
+          actions={[<FlatButton onTouchTap={this.closeComfirmDialog} label="取消" />, <FlatButton secondary onTouchTap={this.changePassword} label="确认" />]}
+          modal={false}
+          open={isComfirmDialogOpen}
+          onRequestClose={this.closeComfirmDialog}
+          >确定修改密码?</Dialog>
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = state => {
-    return {};
+  return {}
 };
 const mapDispatchToProps = dispatch => {
-    return {
-        dispatch
-    };
+  return {
+    dispatch
+  }
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangePassword);

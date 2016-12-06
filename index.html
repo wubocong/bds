@@ -1,46 +1,53 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>本科答辩系统</title>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>本科答辩系统</title>
+  <!--css reset-->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "PingFang SC", "Lantinghei SC", "Microsoft Yahei", "Hiragino Sans GB", "Microsoft Sans Serif", "WenQuanYi Micro Hei";
+    }
     
-    <!--css reset-->
-    <style>
-      *{
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "PingFang SC", "Lantinghei SC", "Microsoft Yahei", "Hiragino Sans GB", "Microsoft Sans Serif", "WenQuanYi Micro Hei";
+    html {
+      font-size: 16px;
+    }
+    
+    body {
+      overflow-x: hidden;
+    }
+    
+    @keyframes circle {
+      0% {
+        transform: rotate(0);
       }
-      html{
-        font-size: 16px;
+      100% {
+        transform: rotate(-360deg);
       }
-      body{
-        overflow-x: hidden;
-      }
-      @keyframes circle{
-        0%{
-          transform: rotate(0);
-        }
-        100%{
-          transform: rotate(-360deg);
-        }
-      }
-      .circle{
-        animation: circle 1.5s linear infinite;
-      }
-      .js-loading{
-        animation: circle 1.5s linear infinite;
-        display: block;
-        margin: 200px auto 0 auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="root">
-      <img class="js-loading" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAACzElEQVRoQ+2Z/VEUQRDFHxGoEWgGSARCBGoESARCBGoEYARqBGgEagRCBhgBEAHUj9q+mltnpmfHGfeu3K7iL7pn+vXn27kdbbnsbLn/WgAkMvhY0ltJPyX96JnlXhn4LOlwcLzXHQ/H9zr8vaR3ki4lPS/MwMtAl6yRPVd6AeDifUkXkm4cL55JOo8ABcRrz74nADd6g8KvTJYAcZA7qAQADUk5UApfJFHfreRY0qlzGFn4mtIpAfBG0qfhAMrhSSvvh2BYs6eO/SCJnopKCYBxlADg1XUpxnBapWw+SsKHagA0GRGghLjwrNS7Aj2bVjnVo1zZlmSgwI9qFfrrStKjxAm/h8AlMz43ABu3NOkYBM6/GkZxMkKbAADnyAR1zu4g2oxPytXttU0BUF2DC4Dq0DUyXDLQKJCxY2hsaAZMAKGh2RsstpWMM4ARqx1leM9cgh+QPJboWNY2cwgAZYwwRhhjbME5xKMYe7YfQgAxZtiS90wJBHvgRcbgxChNCCBknWY7V5PzIbQ7FQClA3IzzJKoKeGs0K0qIbuHdQ7B4m8uoR/JQozkfRs40oNvc5VISWCMvoelxARilK440iYDMJBkwzLyB7nbBgDZbC0ASoq5p85/kwGaiAZyv5Aqo80OYvMyeRjfPCsWjXEvAxzIs5+RqqLnvokguON7wMHMvGiRegD42ObRNZQVD5noaEo99bRItiFt2Ux4AK4jkVnbhA1A3GXO4F00+/uCByDGCrNPfRWAugLgXYYeMLkNGq3C16hJVwDcSAMDxN5rvOmArr1mowuzhMOkJljqeZFJBLH8p5uYC5koY/HKDhAAh7jxIkfp8oHljm2vB7wAjP//V9Gcehn6rQGkPkSIauwDvcbnNZvWAFK/uLQevSsQrQFACfiSejqaXNR3l9+LWwPAb0DgsPEntrk3uapLqQeAamdqDBcANVFraXMPplR+MVRPL3QAAAAASUVORK5CYII=">
-    </div>
-    <script type="text/javascript" src="./build/bundle.js"></script>
-  </body>
+    }
+    
+    .circle {
+      animation: circle 1.5s linear infinite;
+    }
+    
+    .js-loading {
+      animation: circle 1.5s linear infinite;
+      display: block;
+      margin: 200px auto 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <img class="js-loading" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAACzElEQVRoQ+2Z/VEUQRDFHxGoEWgGSARCBGoESARCBGoEYARqBGgEagRCBhgBEAHUj9q+mltnpmfHGfeu3K7iL7pn+vXn27kdbbnsbLn/WgAkMvhY0ltJPyX96JnlXhn4LOlwcLzXHQ/H9zr8vaR3ki4lPS/MwMtAl6yRPVd6AeDifUkXkm4cL55JOo8ABcRrz74nADd6g8KvTJYAcZA7qAQADUk5UApfJFHfreRY0qlzGFn4mtIpAfBG0qfhAMrhSSvvh2BYs6eO/SCJnopKCYBxlADg1XUpxnBapWw+SsKHagA0GRGghLjwrNS7Aj2bVjnVo1zZlmSgwI9qFfrrStKjxAm/h8AlMz43ABu3NOkYBM6/GkZxMkKbAADnyAR1zu4g2oxPytXttU0BUF2DC4Dq0DUyXDLQKJCxY2hsaAZMAKGh2RsstpWMM4ARqx1leM9cgh+QPJboWNY2cwgAZYwwRhhjbME5xKMYe7YfQgAxZtiS90wJBHvgRcbgxChNCCBknWY7V5PzIbQ7FQClA3IzzJKoKeGs0K0qIbuHdQ7B4m8uoR/JQozkfRs40oNvc5VISWCMvoelxARilK440iYDMJBkwzLyB7nbBgDZbC0ASoq5p85/kwGaiAZyv5Aqo80OYvMyeRjfPCsWjXEvAxzIs5+RqqLnvokguON7wMHMvGiRegD42ObRNZQVD5noaEo99bRItiFt2Ux4AK4jkVnbhA1A3GXO4F00+/uCByDGCrNPfRWAugLgXYYeMLkNGq3C16hJVwDcSAMDxN5rvOmArr1mowuzhMOkJljqeZFJBLH8p5uYC5koY/HKDhAAh7jxIkfp8oHljm2vB7wAjP//V9Gcehn6rQGkPkSIauwDvcbnNZvWAFK/uLQevSsQrQFACfiSejqaXNR3l9+LWwPAb0DgsPEntrk3uapLqQeAamdqDBcANVFraXMPplR+MVRPL3QAAAAASUVORK5CYII=">
+  </div>
+  <script type="text/javascript" src="./build/bundle.js"></script>
+</body>
+
 </html>

@@ -30,9 +30,7 @@ class Storage {
     return JSON.parse(userString);
   }
   static clear() {
-    database.removeItem('lastTime');
-    database.removeItem('token');
-    database.removeItem('user');
+    database.clear();
   }
 }
 

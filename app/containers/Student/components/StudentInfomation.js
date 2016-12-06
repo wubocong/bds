@@ -27,8 +27,8 @@ class StudentInformation extends Component {
                 paper: {
                     name: '宠物健康管家APP设计与开发',
                     desp: '现在越来越多人选择在家里养宠物，但是由于工作忙，照料宠物的时间很少。随着移动互联网和传感器的兴起，在宠物身上佩戴具有定位功能、身体指标监控的传感器，人可以在手机端随时查看宠物的位置、宠物的健康状态，以实现对宠物的健康管理。',
-                    filepath: '',
-                    filename: '',
+                    filepath: '123.doc',
+                    filename: '123',
                     comments: [{
                         content: '指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见，指导意见。',
                         time: 0
@@ -52,10 +52,10 @@ class StudentInformation extends Component {
         if (!defense) {
             user = Object.assign({}, user, {
                 defense: {
-                    status: 0,
+                    status: 2,
                     time: 0,
                     address: '答辩地址答辩地址答辩地址',
-                    scopes: [{
+                    scores: [{
                         sum: 80,
                         name: 'teacher1'
                     }, {
@@ -182,10 +182,10 @@ class StudentInformation extends Component {
                   progressOne = '';
 
                     let total = 0;
-                    for(let scope of defense.scopes){
-                      total += scope.sum;
+                    for(let score of defense.scores){
+                      total += score.sum;
                     }
-                    let avarage = total / defense.scopes.length;
+                    let avarage = total / defense.scores.length;
                     progressTwo = <Paper zDepth={1} style={{
                         margin: '20px 0',
                         padding: 20

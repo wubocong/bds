@@ -9,8 +9,8 @@ import Divider from 'material-ui/Divider';
 
 import PersonIcon from '../../../images/person.png';
 import LogoutIcon from '../../../images/logout.png';
-import DownTri from '../../../images/down-tri.png';
-import UpTri from '../../../images/up-tri.png';
+import DownTri from '../../../images/down-tri16.png';
+import UpTri from '../../../images/up-tri16.png';
 import { OPEN_LOGOUT_DIALOG, CHANGE_TITLE } from '../../App/constants';
 
 const menuItemStyle = {
