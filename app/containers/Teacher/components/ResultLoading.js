@@ -32,7 +32,7 @@ class ResultLoading extends Component {
       } else {
         dispatch(push(`/teacher/result?studentId=${studentId}&defenseId=${defenseId}`));
       }
-    }, 1000);
+    }, 5000);
   }
 
   render() {
