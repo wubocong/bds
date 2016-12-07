@@ -5,7 +5,7 @@ const defense = {
   time: new Date - 0,
   address: '华南农业大学 第三教学楼 303',
   finished: 1,
-  leaderId: 'leader',
+  leaderId: '5846d707fd28fc46dc18798f',
   teachers: [
     {
       _id: 'leader',
@@ -26,6 +26,7 @@ const defense = {
       name: "mebtte",
       account: '201330302523',
       paper: {
+        _id: 'paper',
         name: "宠物管家APP"
       },
       teacher: {
@@ -38,6 +39,7 @@ const defense = {
       name: "mebtte",
       account: '201330302523',
       paper: {
+        _id: 'paper',
         name: "宠物管家APP",
         finalScore: 90
       },

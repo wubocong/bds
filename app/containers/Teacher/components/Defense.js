@@ -54,13 +54,13 @@ class Defense extends Component {
     dispatch(push('/teacher'));
   }
 
-  openQuitDialog = () =>{
+  openQuitDialog = () => {
     this.setState({
       isQuitDialogOpen: true
     });
   }
 
-  closeQuitDialog = () =>{
+  closeQuitDialog = () => {
     this.setState({
       isQuitDialogOpen: false
     });
@@ -90,7 +90,7 @@ class Defense extends Component {
             actions={[<FlatButton onTouchTap={this.closeQuitDialog} label="取消" />, <FlatButton secondary onTouchTap={this.quit} label="确认" />]}
             open={isQuitDialogOpen}
             onRequestClose={this.closeQuitDialog}
-            >确定退出答辩?<br/><br/><span style={{
+            >确定退出答辩?<br /><br /><span style={{
               fontSize: '0.9rem'
             }}>提示：在答辩时间结束之前仍可进入该场答辩</span></Dialog>
           <div style={{
@@ -132,9 +132,9 @@ class Defense extends Component {
               fontSize: '0.9rem',
               margin: '5px 0'
             }}>
-              已答辩 / 总人数：{defense.finished} / {defense.students.length}
+              已答辩 / 总人数：{defense.finished}/ {defense.students.length}
               &nbsp;&nbsp;&nbsp;
-              <RaisedButton secondary label="退出答辩" onTouchTap={this.openQuitDialog} />
+              {defense.status === 1 ? <RaisedButton secondary label="退出答辩" onTouchTap={this.openQuitDialog} /> : <Link to="/teacher"><RaisedButton label="返回" /></Link>}
             </div>
           </div>
           <div style={{
@@ -145,59 +145,7 @@ class Defense extends Component {
                 // 已答辩
                 if (student.paper.finalScore) {
                   return (
-                    <Paper key={key} zDepth={2} style={{
-                      padding: '5px 10px',
-                      margin: '10px auto',
-                      display: 'flex',
-                      alignItems: 'center',
-                      position: 'relative',
-                      maxWidth: 450,
-                      cursor: 'not-allowed'
-                    }}>
-                      <img src={student.avatar || StudentIcon} style={{
-                        display: 'inline-block',
-                        height: 60,
-                        width: 60,
-                        borderRadius: '50%',
-                        marginRight: 10
-                      }} />
-                      <div style={{
-                        fontSize: '1.3rem',
-                        display: 'inline-block',
-                        padding: 10,
-                        lineHeight: '1.45rem',
-                        width: 'calc(100% - 140px)'
-                      }}>
-                        {student.name}
-                        <span style={{
-                          fontSize: '0.9rem',
-                          marginLeft: 20
-                        }}>{student.account}</span>
-                        <div style={{
-                          fontSize: '1.1rem',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}>{student.paper.name}</div>
-                      </div>
-                      <div src={ArrowRight} style={{
-                        display: 'inline-block',
-                        padding: 10,
-                        width: 50,
-                        fontSize: '1.3rem',
-                        backgroundColor: 'rgb(0, 188, 212)',
-                        color: 'white',
-                        borderRadius: '3px',
-                        marginRight: 10
-                      }}>{student.paper.finalScore}</div>
-                    </Paper>
-                  );
-                }
-
-                // 未答辩
-                else {
-                  return (
-                    <Link key={key} to={`/teacher/evaluate?studentId=${student._id}&studentName=${student.name}&studentAccount=${student.account}&paperName=${student.paper.name}&guideTeacher=${student.teacher.name + ' ' + student.teacher.posTitle}&defenseId=${defenseId}&leaderId=${defense.leaderId}`} style={{
+                    <Link key={key} to={`/teacher/result?&paperName=${student.paper.name}&paperId=${student.paper._id}&studentName=${student.name}&studentAccount=${student.account}&defenseId=${defense._id}&guideTeacher=${student.teacher.name}`} style={{
                       textDecoration: 'none'
                     }}>
                       <Paper zDepth={2} style={{
@@ -220,7 +168,7 @@ class Defense extends Component {
                           display: 'inline-block',
                           padding: 10,
                           lineHeight: '1.45rem',
-                          width: 'calc(100% - 130px)'
+                          width: 'calc(100% - 140px)'
                         }}>
                           {student.name}
                           <span style={{
@@ -234,13 +182,121 @@ class Defense extends Component {
                             textOverflow: 'ellipsis'
                           }}>{student.paper.name}</div>
                         </div>
-                        <img src={ArrowRight} style={{
-                          paddingRight: 20,
-                          width: 50
-                        }} />
+                        <div src={ArrowRight} style={{
+                          display: 'inline-block',
+                          padding: 10,
+                          width: 50,
+                          fontSize: '0.9rem',
+                          backgroundColor: 'rgb(0, 188, 212)',
+                          color: 'white',
+                          borderRadius: '3px',
+                          marginRight: 10,
+                          textAlign: 'center'
+                        }}>{student.paper.finalScore}</div>
                       </Paper>
                     </Link>
                   );
+                }
+
+                // 未答辩
+                else {
+                  if (defense.status === 1) {
+                    return (
+                      <Link key={key} to={`/teacher/evaluate?paperId=${student.paper._id}&studentName=${student.name}&studentAccount=${student.account}&paperName=${student.paper.name}&guideTeacher=${student.teacher.name + ' ' + student.teacher.posTitle}&leaderId=${defense.leaderId}&defenseId=${defense._id}`} style={{
+                        textDecoration: 'none'
+                      }}>
+                        <Paper zDepth={2} style={{
+                          padding: '5px 10px',
+                          margin: '10px auto',
+                          display: 'flex',
+                          alignItems: 'center',
+                          position: 'relative',
+                          maxWidth: 450
+                        }}>
+                          <img src={student.avatar || StudentIcon} style={{
+                            display: 'inline-block',
+                            height: 60,
+                            width: 60,
+                            borderRadius: '50%',
+                            marginRight: 10
+                          }} />
+                          <div style={{
+                            fontSize: '1.3rem',
+                            display: 'inline-block',
+                            padding: 10,
+                            lineHeight: '1.45rem',
+                            width: 'calc(100% - 130px)'
+                          }}>
+                            {student.name}
+                            <span style={{
+                              fontSize: '0.9rem',
+                              marginLeft: 20
+                            }}>{student.account}</span>
+                            <div style={{
+                              fontSize: '1.1rem',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}>{student.paper.name}</div>
+                          </div>
+                          <img src={ArrowRight} style={{
+                            paddingRight: 20,
+                            width: 50
+                          }} />
+                        </Paper>
+                      </Link>
+                    );
+                  } else {
+                    return (
+                      <Paper zDepth={2} style={{
+                        padding: '5px 10px',
+                        margin: '10px auto',
+                        display: 'flex',
+                        alignItems: 'center',
+                        position: 'relative',
+                        maxWidth: 450,
+                        cursor: 'not-allowed'
+                      }}>
+                        <img src={student.avatar || StudentIcon} style={{
+                          display: 'inline-block',
+                          height: 60,
+                          width: 60,
+                          borderRadius: '50%',
+                          marginRight: 10
+                        }} />
+                        <div style={{
+                          fontSize: '1.3rem',
+                          display: 'inline-block',
+                          padding: 10,
+                          lineHeight: '1.45rem',
+                          width: 'calc(100% - 140px)'
+                        }}>
+                          {student.name}
+                          <span style={{
+                            fontSize: '0.9rem',
+                            marginLeft: 20
+                          }}>{student.account}</span>
+                          <div style={{
+                            fontSize: '1.1rem',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}>{student.paper.name}</div>
+                        </div>
+                        <div src={ArrowRight} style={{
+                          display: 'inline-block',
+                          padding: 10,
+                          width: 50,
+                          fontSize: '0.9rem',
+                          backgroundColor: 'red',
+                          color: 'white',
+                          borderRadius: '3px',
+                          marginRight: 10,
+                          textAlign: 'center'
+                        }}>缺席</div>
+                      </Paper>
+                    );
+                  }
                 }
               })
             }

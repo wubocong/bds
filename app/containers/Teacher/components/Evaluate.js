@@ -11,6 +11,7 @@ import FlatButton from 'material-ui/FlatButton';
 import ReturnIconButton from '../../../components/ReturnIconButton';
 import { CONFIG_APPBAR, OPEN_SNACKBAR, OPEN_LOADING_DIALOG, CLOSE_LOADING_DIALOG } from '../../App/constants';
 import EvaluateItem from './EvaluateItem';
+import Storage from '../../../models/Storage';
 
 class Evaluate extends Component {
 
@@ -195,10 +196,11 @@ class Evaluate extends Component {
     this.closeComfirmDialog();
     this.openLoadingDialog();
     const { dispatch } = this.props;
-    const { leaderId, studentId, defenseId } = this.props.location.query;
+    const { leaderId, paperId, studentAccount, paperName, guideTeacher, studentName, defenseId } = this.props.location.query;
+    const user = Storage.getUser();
     setTimeout(() => {
       this.closeLoadingDialog();
-      dispatch(push(`/teacher/result-loading?leaderId=${leaderId}&studentId=${studentId}&defenseId=${defenseId}`));
+      dispatch(push(`/teacher/result-loading?leaderId=${leaderId}&paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&guideTeacher=${guideTeacher}&studentAccount=${studentAccount}&defenseId=${defenseId}`));
     }, 1000);
   }
 

@@ -23,16 +23,16 @@ class ResultLoading extends Component {
   }
 
   componentDidMount() {
-    const {leaderId, studentId, defenseId} = this.props.location.query;
+    const {leaderId, paperId, studentName, studentAccount, paperName, guideTeacher, defenseId } = this.props.location.query;
     const user = Storage.getUser();
     const { dispatch } = this.props;
     setTimeout(() => {
       if (user._id === leaderId) {
-        dispatch(push(`/teacher/remark?defenseId=${defenseId}&studentId=${studentId}`));
+        dispatch(push(`/teacher/remark?paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&studentAccount=${studentAccount}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
       } else {
-        dispatch(push(`/teacher/result?studentId=${studentId}&defenseId=${defenseId}`));
+        dispatch(push(`/teacher/result?paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&studentAccount=${studentAccount}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
       }
-    }, 5000);
+    }, 2000);
   }
 
   render() {

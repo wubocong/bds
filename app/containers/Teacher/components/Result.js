@@ -1,11 +1,23 @@
 import React, { Component } from 'react';
 import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
+import CircularProgress from 'material-ui/CircularProgress';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import { CONFIG_APPBAR } from '../../App/constants';
 import ReturnIconButton from '../../../components/ReturnIconButton';
 
+import test_grade from '../../../test_data/teacher_result';
+
 class Result extends Component{
+
+  constructor(props){
+    super(props);
+    this.state = {
+      grade: null
+    };
+  }
 
   componentWillMount(){
     const { dispatch} = this.props;
@@ -21,14 +33,79 @@ class Result extends Component{
     });
   }
 
+  componentDidMount(){
+    setTimeout(() => {
+      this.setState({
+        grade: test_grade
+      });
+    }, 2000);
+  }
+
   render(){
+    let { grade } = this.state;
+    let { paperName, studentName, studentAccount, guideTeacher, defenseId } = this.props.location.query;
     return (
       <div className="leftIn" style={{
         margin: '80px auto 30px auto',
         maxWidth: 450,
         padding: '0 20px'
       }}>
-        result
+        {
+          grade ? <div>
+            <div style={{
+              fontSize: '1.3rem',
+              textAlign: 'center',
+              lineHeight: '1.95rem'
+            }}>
+              {studentName}
+              &nbsp;&nbsp;&nbsp;
+              <span style={{
+                fontSize: '0.9rem',
+                color: 'gray'
+              }}>{studentAccount}</span>
+            </div>
+            <div style={{
+              fontSize: '0.9rem',
+              lineHeight: '1.65rem',
+              textAlign: 'center'
+            }}>
+              {paperName}
+              <br/>
+              指导老师：{guideTeacher}
+            </div>
+            <div style={{
+              textAlign: 'center',
+              margin: '30px 0'
+            }}>
+              <RaisedButton primary label={grade.finalScore} />
+            </div>
+            <textarea disabled value={grade.remark} style={{
+              width: '100%',
+              padding: 10,
+              borderRadius: 3,
+              outline: 'none',
+              resize: 'none',
+              height: '150px',
+              fontSize: '0.9rem',
+              lineHeight: '1.35rem'
+            }}></textarea>
+            <div style={{
+              textAlign: 'center',
+              marginTop: 30
+            }}>
+              <Link to={`/teacher/defense?defenseId=${defenseId}`}><RaisedButton label="返回答辩列表" /></Link>
+            </div>
+          </div> : <div style={{
+            textAlign: 'center',
+            marginTop: 150,
+            fontSize: '0.9rem'
+          }}>
+            <CircularProgress />
+            <br/>
+            <br/>
+            正在获取成绩...
+          </div>
+        }
       </div>
     );
   }
