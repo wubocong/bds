@@ -31,31 +31,31 @@ class EvaluateItem extends Component {
           margin: '10px 0'
         }} >
           <RadioButton
-            value="100"
+            value="0"
             label="优秀"
             style={RadioButtonStyle}
             iconStyle={IconStyle}
             />
           <RadioButton
-            value="90"
+            value="1"
             label="良好"
             style={RadioButtonStyle}
             iconStyle={IconStyle}
             />
           <RadioButton
-            value="80"
+            value="2"
             label="中等"
             style={RadioButtonStyle}
             iconStyle={IconStyle}
             />
           <RadioButton
-            value="70"
+            value="3"
             label="及格"
             style={RadioButtonStyle}
             iconStyle={IconStyle}
             />
           <RadioButton
-            value="60"
+            value="4"
             label="不及格"
             style={RadioButtonStyle}
             iconStyle={IconStyle}

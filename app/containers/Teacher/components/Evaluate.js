@@ -26,7 +26,7 @@ class Evaluate extends Component {
       descriptionScore: null,
       innovationScore: null,
       defenseScore: null,
-      score: null,
+      sum: null,
       isComfirmDialogOpen: false
     };
   }
@@ -59,11 +59,11 @@ class Evaluate extends Component {
 
   calculateScore = () => {
     const { topicScore, pointScore, designScore, qualityScore, resultScore, descriptionScore, innovationScore, defenseScore } = this.state;
-    if (topicScore && pointScore && designScore && qualityScore && resultScore && descriptionScore && innovationScore && defenseScore) {
+    if (topicScore !== null && pointScore !== null && designScore !== null && qualityScore !== null && resultScore !== null && descriptionScore !== null && innovationScore !== null && defenseScore !== null) {
+      let scores = [100, 90, 80, 70, 60];
       this.setState({
-        score: (topicScore + pointScore + designScore + qualityScore + resultScore + descriptionScore + innovationScore + defenseScore) / 8
+        sum: (scores[topicScore] + scores[pointScore] + scores[designScore] + scores[qualityScore] + scores[resultScore] + scores[descriptionScore] + scores[innovationScore] + scores[defenseScore]) / 8
       });
-      console.log(this.state.score);
     }
   }
 
@@ -139,9 +139,9 @@ class Evaluate extends Component {
     }, 0);
   }
 
-  setScore = event => {
+  setSum = event => {
     this.setState({
-      score: parseInt(event.target.value)
+      sum: parseInt(event.target.value)
     });
   }
 
@@ -168,24 +168,26 @@ class Evaluate extends Component {
   }
 
   beforeUploadScore = event => {
-    const { topicScore, pointScore, designScore, qualityScore, resultScore, descriptionScore, innovationScore, defenseScore, score } = this.state;
-    if (!topicScore) {
+    const { topicScore, pointScore, designScore, qualityScore, resultScore, descriptionScore, innovationScore, defenseScore, sum } = this.state;
+    if (topicScore === null) {
       this.showWarning('请评价《选题情况》！');
-    } else if (!pointScore) {
+    } else if (pointScore === null) {
       this.showWarning('请评价《立论》！');
-    } else if (!designScore) {
+    } else if (designScore === null) {
       this.showWarning('请评价《方案设计》！');
-    } else if (!qualityScore) {
+    } else if (qualityScore === null) {
       this.showWarning('请评价《论文质量》！');
-    } else if (!resultScore) {
+    } else if (resultScore === null) {
       this.showWarning('请评价《论文结果》！');
-    } else if (!descriptionScore) {
+    } else if (descriptionScore === null) {
       this.showWarning('请评价《文字表述》！');
-    } else if (!innovationScore) {
+    } else if (innovationScore === null) {
       this.showWarning('请评价《创新程度》！');
-    } else if (!defenseScore) {
+    } else if (defenseScore === null) {
       this.showWarning('请评价《答辩情况》！');
-    } else if (score < 0 || score > 100) {
+    } else if (!sum) {
+      this.showWarning('请填写总分！');
+    } else if (sum < 0 || sum > 100) {
       this.showWarning('分数应在 0 ~ 100 之间！');
     } else {
       this.openComfirmDialog();
@@ -206,7 +208,7 @@ class Evaluate extends Component {
 
   render() {
     const { studentName, studentAccount, guideTeacher, paperName, defenseId } = this.props.location.query;
-    const { topicScore, pointScore, designScore, qualityScore, resultScore, descriptionScore, innovationScore, defenseScore, score, isComfirmDialogOpen } = this.state;
+    const { topicScore, pointScore, designScore, qualityScore, resultScore, descriptionScore, innovationScore, defenseScore, sum, isComfirmDialogOpen } = this.state;
     return (
       <div className="leftIn">
         <div style={{
@@ -246,7 +248,7 @@ class Evaluate extends Component {
           textAlign: 'center',
           margin: '10px auto 30px auto'
         }}>
-          <TextField type="number" max="100" min="0" value={score || ''} floatingLabelText="总分" onChange={this.setScore} floatingLabelStyle={{
+          <TextField type="number" value={sum === null ? '' : sum} floatingLabelText="总分" onChange={this.setSum} floatingLabelStyle={{
             color: 'black'
           }} />
           &nbsp;&nbsp;&nbsp;

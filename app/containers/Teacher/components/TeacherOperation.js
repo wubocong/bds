@@ -37,7 +37,7 @@ class TeacherOperation extends Component {
 
     return (
       <div className="rightIn" style={{
-        margin: '80px auto',
+        margin: '80px auto 30px auto',
         maxWidth: 500
       }}>
         {

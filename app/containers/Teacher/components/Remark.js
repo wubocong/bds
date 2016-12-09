@@ -6,7 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 
 import { CONFIG_APPBAR, OPEN_LOADING_DIALOG, CLOSE_LOADING_DIALOG } from '../../App/constants';
 import LoadingButton from '../../../components/LoadingButton';
@@ -142,24 +142,56 @@ class Remark extends Component {
       const { dispatch } = this.props;
       const { studentName, studentAccount, paperName, guideTeacher, paperId, defenseId, leaderId } = this.props.location.query;
       dispatch(push(`/teacher/evaluate?studentAccount=${studentAccount}&studentName=${studentName}&paperId=${paperId}&paperName=${paperName}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
-    }, 2000);
+    }, 1000);
   }
 
   render() {
     let { paperName, studentName, studentAccount, guideTeacher, defenseId } = this.props.location.query;
     let { paper, isReturnDialogOpen, isComfirmDialogOpen } = this.state;
     let tables = [];
-    if(paper){
-      let items = ['论文选题', '立论', '方案设计', '论文质量', '论文结果', '文字表述', '创新程度', '答辩情况'];
+    if (paper) {
+      let ITEM_NAME = {
+        topicScore: '论文选题',
+        pointScore: '立论',
+        designScore: '方案设计',
+        qualityScore: '论文质量',
+        resultScore: '论文结果',
+        descriptionScore: '文字表述',
+        innovationScore: '创新程度',
+        defenseScore: '答辩情况'
+      };
       let evaluates = ['不及格', '及格', '中等', '良好', '优秀'];
-      for(let item of items){
-        let table = {
-          itemName: item
-        };
-        for(let scope of paper.scopes){
-          table[scope.teacher.name] = 
+      let colors = ['green', 'blue', 'orange', 'pink', 'red'];
+      for (let key in ITEM_NAME) {
+        let table = [];
+        table.push(<TableRowColumn>{ITEM_NAME[key]}</TableRowColumn>);
+        for (let scope of paper.scopes) {
+
+          table.push(<TableRowColumn style={{
+            color: colors[scope.items[key]]
+          }}>{evaluates[scope.items[key]]}</TableRowColumn>);
         }
+        tables.push(table);
       }
+      let finalTable = [<TableRowColumn>评分</TableRowColumn>];
+      for (let scope of paper.scopes) {
+        let color;
+        if (scope.sum >= 90) {
+          color = 'green';
+        } else if (scope.sum >= 80) {
+          color = 'blue';
+        } else if (scope.sum >= 70) {
+          color = 'orange';
+        } else if (scope.sum >= 60) {
+          color = 'pink';
+        } else {
+          color = 'red';
+        }
+        finalTable.push(<TableRowColumn style={{
+          color: color
+        }}>{scope.sum}</TableRowColumn>);
+      }
+      tables.push(finalTable);
     }
     return (
       <div className="leftIn" style={{
@@ -200,33 +232,21 @@ class Remark extends Component {
                 </TableRow>
               </TableHeader>
               <TableBody stripedRows={true} displayRowCheckbox={false}>
-                <TableRow>
-                  <TableRowColumn>1</TableRowColumn>
-                  <TableRowColumn>1</TableRowColumn>
-                  <TableRowColumn>John Smith</TableRowColumn>
-                  <TableRowColumn>Employed</TableRowColumn>
-                </TableRow>
-                <TableRow>
-                  <TableRowColumn>2</TableRowColumn>
-                  <TableRowColumn>Randal White</TableRowColumn>
-                  <TableRowColumn>Unemployed</TableRowColumn>
-                </TableRow>
-                <TableRow>
-                  <TableRowColumn>3</TableRowColumn>
-                  <TableRowColumn>Stephanie Sanders</TableRowColumn>
-                  <TableRowColumn>Employed</TableRowColumn>
-                </TableRow>
-                <TableRow>
-                  <TableRowColumn>4</TableRowColumn>
-                  <TableRowColumn>Steve Brown</TableRowColumn>
-                  <TableRowColumn>Employed</TableRowColumn>
-                </TableRow>
+                {
+                  tables.map((table, index) => {
+                    return (
+                      <TableRow key={index}>
+                        {table}
+                      </TableRow>
+                    );
+                  })
+                }
               </TableBody>
             </Table>
             <div style={{
               margin: '20px 0'
             }}>
-              <TextField onChange={this.setFinalScore} fullWidth floatingLabelText="最终成绩" value={paper.finalScore} />
+              <TextField onChange={this.setFinalScore} fullWidth floatingLabelText="最终成绩" value={paper.finalScore}/>
             </div>
             <textarea onChange={this.setRemark} value={paper.remark} style={{
               width: '100%',
