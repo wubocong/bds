@@ -12,6 +12,7 @@ import ReturnIconButton from '../../../components/ReturnIconButton';
 import { CONFIG_APPBAR, OPEN_SNACKBAR, OPEN_LOADING_DIALOG, CLOSE_LOADING_DIALOG } from '../../App/constants';
 import EvaluateItem from './EvaluateItem';
 import Storage from '../../../models/Storage';
+import { HOST } from '../../../constants';
 
 class Evaluate extends Component {
 
@@ -199,11 +200,45 @@ class Evaluate extends Component {
     this.openLoadingDialog();
     const { dispatch } = this.props;
     const { leaderId, paperId, studentAccount, paperName, guideTeacher, studentName, defenseId } = this.props.location.query;
-    const user = Storage.getUser();
-    setTimeout(() => {
+    let { sum, topicScore, pointScore, designScore, qualityScore, resultScore, descriptionScore, innovationScore, defenseScore } = this.state;
+    const token = Storage.getToken();
+    fetch(`${HOST}/papers/score/${paperId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'bearer ' + token
+      },
+      body: JSON.stringify({
+        score: {
+          items: {
+            topicScore,
+            pointScore,
+            designScore,
+            qualityScore,
+            resultScore,
+            descriptionScore,
+            innovationScore,
+            defenseScore
+          },
+          sum
+        }
+      })
+    }).then(response => {
       this.closeLoadingDialog();
-      dispatch(push(`/teacher/result-loading?leaderId=${leaderId}&paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&guideTeacher=${guideTeacher}&studentAccount=${studentAccount}&defenseId=${defenseId}`));
-    }, 1000);
+      if (response.status === 200) {
+        dispatch(push(`/teacher/result-loading?leaderId=${leaderId}&paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&guideTeacher=${guideTeacher}&studentAccount=${studentAccount}&defenseId=${defenseId}`));
+      } else {
+        dispatch({
+          type: OPEN_SNACKBAR,
+          snackbarText: '未知错误！请重试！'
+        });
+      }
+    }, error => {
+      this.closeLoadingDialog();
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '网络错误！请重试！'
+      });
+    });
   }
 
   render() {

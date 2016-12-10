@@ -1,78 +1,140 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { push } from 'react-router-redux';
-import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import Divider from 'material-ui/Divider';
+import TextField from 'material-ui/TextField';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 
-import Storage from '../../../models/Storage';
-import { CHANGE_TITLE } from '../../App/constants';
+import { OPEN_SNACKBAR, CONFIG_APPBAR } from '../../App/constants';
+import ReturnIconButton from '../../../components/ReturnIconButton';
+
+const inputButtonStyle = {
+  width: 'calc(50% - 20px)',
+  margin: '0 10px'
+};
 
 class ManageTeacher extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      keyword: ''
+      isSingleInputDialogOpen: true,
+      isBatchInputDialogOpen: false
     };
   }
 
   componentWillMount() {
-    const token = Storage.getToken();
     const { dispatch } = this.props;
-    if (!token) {
-      dispatch(push('/'));
-    } else {
-      dispatch({
-        type: CHANGE_TITLE,
-        title: '管理教师信息'
-      });
-    }
-  }
-
-  setKeyword = event => {
-    this.setState({
-      keyword: event.target.value
+    dispatch({
+      type: CONFIG_APPBAR,
+      appbarConfig: {
+        isAppbarOpen: true,
+        title: '管理教师信息',
+        appbarLeftElement: <ReturnIconButton href="/admin" />,
+        appbarRightElement: null
+      }
     });
   }
 
-  render() {
-    const { keyword } = this.state;
+  openSingleInputDialog = () => {
+    this.setState({
+      isSingleInputDialogOpen: true
+    });
+  }
 
+  closeSingleInputDialog = () => {
+    this.setState({
+      isSingleInputDialogOpen: false
+    });
+  }
+
+  beforeSingleUpload = () => {
+
+  }
+
+  openBatchInputDialog = () => {
+    this.setState({
+      isBatchInputDialogOpen: true
+    });
+  }
+
+  closeBatchInputDialog = () => {
+    this.setState({
+      isBatchInputDialogOpen: false
+    });
+  }
+
+  beforeBatchUpload = () => {
+
+  }
+
+  render() {
+    let { isSingleInputDialogOpen, isBatchInputDialogOpen } = this.state;
     return (
       <div className="leftIn" style={{
-        maxWidth: 500,
-        margin: '20px auto 30px auto'
+        margin: '80px auto 30px auto',
+        maxWidth: 450
       }}>
-        <div style={{
-          textAlign: 'center',
-          margin: '20px 0'
-        }}>
-          <RaisedButton primary label="新增教师" />
-          &nbsp;
-          <RaisedButton primary label="批量增加教师" />
+        <div>
+          <RaisedButton onTouchTap={this.openSingleInputDialog} primary label="录入教师信息" style={inputButtonStyle} />
+          <RaisedButton onTouchTap={this.openBatchInputDialog} primary label="批量录入教师信息" style={inputButtonStyle} />
         </div>
-        <Divider />
-        <div style={{
-          padding: '10px 20px'
-        }}>
-          <TextField onChange={this.setKeyword} floatingLabelText="搜索教师" hintText="工号或者姓名" value={keyword} style={{
-            width: '80%',
-            verticalAlign: 'bottom'
+        <Dialog
+          title="录入教师信息"
+          actions={[<FlatButton onTouchTap={this.closeSingleInputDialog}>取消</FlatButton>, <FlatButton onTouchTap={this.beforeSingleUpload} secondary>录入</FlatButton>]}
+          modal={false}
+          open={isSingleInputDialogOpen}
+          onRequestClose={this.closeSingleInputDialog}
+          autoScrollBodyContent={true}
+          >
+          <TextField fullWidth floatingLabelText="工号" />
+          <TextField fullWidth floatingLabelText="姓名" />
+          <SelectField fullWidth floatingLabelText="性别">
+            <MenuItem value={true} primaryText="男" />
+            <MenuItem value={false} primaryText="女" />
+          </SelectField>
+          <SelectField fullWidth floatingLabelText="职称">
+            <MenuItem value={4} primaryText="教授" />
+            <MenuItem value={3} primaryText="副教授" />
+            <MenuItem value={2} primaryText="讲师" />
+            <MenuItem value={1} primaryText="助教" />
+            <MenuItem value={0} primaryText="无" />
+          </SelectField>
+          <SelectField fullWidth floatingLabelText="学历">
+            <MenuItem value={4} primaryText="博士" />
+            <MenuItem value={3} primaryText="硕士" />
+            <MenuItem value={2} primaryText="本科" />
+            <MenuItem value={1} primaryText="专科" />
+            <MenuItem value={0} primaryText="无" />
+          </SelectField>
+          <TextField fullWidth floatingLabelText="邮箱" />
+          <TextField fullWidth floatingLabelText="电话" />
+        </Dialog>
+        <Dialog
+          title="批量录入教师信息"
+          actions={[<FlatButton onTouchTap={this.closeBatchInputDialog}>取消</FlatButton>, <FlatButton onTouchTap={this.beforeBatchUpload} secondary>录入</FlatButton>]}
+          modal={false}
+          open={isBatchInputDialogOpen}
+          onRequestClose={this.closeBatchInputDialog}
+          >
+          <input type="file" placeholder="教师信息EXCEL文件" style={{
+            width: '100%'
           }} />
-          <RaisedButton primary label="搜索" style={{
-            width: '20%',
-            marginBottom: 8
-          }} />
-        </div>
+          <br />
+          <br />
+          <a href="http://panhongyi.net" target="_blank" style={{
+            fontSize: '0.9rem'
+          }}>下载模板EXCLE文件</a>
+        </Dialog>
       </div>
     );
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProp = state => {
   return {};
 };
 const mapDispatchToProps = dispatch => {
@@ -81,4 +143,4 @@ const mapDispatchToProps = dispatch => {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ManageTeacher);
+export default connect(mapStateToProp, mapDispatchToProps)(ManageTeacher);

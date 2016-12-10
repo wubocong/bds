@@ -32,8 +32,8 @@ class TeacherOperation extends Component {
 
   render() {
 
-    // let user = Storage.getUser();
-    let user = test_user;
+    let user = Storage.getUser();
+    // let user = test_user;
 
     return (
       <div className="rightIn" style={{
@@ -41,7 +41,7 @@ class TeacherOperation extends Component {
         maxWidth: 500
       }}>
         {
-          user.studentIds && user.studentIds.length ? <Link to="/teacher/guidance" style={{
+          user.students && user.students.length ? <Link to="/teacher/guidance-list" style={{
             textDecoration: 'none'
           }}>
             <Paper zDepth={3} style={{

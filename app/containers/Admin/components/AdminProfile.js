@@ -1,201 +1,158 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import { push } from 'react-router-redux';
+import { Link } from 'react-router';
+import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 
 import Storage from '../../../models/Storage';
-import { CHANGE_TITLE, OPEN_SNACKBAR } from '../../App/constants';
-import { HOST } from '../../../constants';
+import { CONFIG_APPBAR, OPEN_SNACKBAR, OPEN_LOADING_DIALOG, CLOSE_LOADING_DIALOG } from '../../App/constants';
+import ReturnIconButton from '../../../components/ReturnIconButton';
 
 class AdminProfile extends Component {
 
   constructor(props) {
     super(props);
-    const user = Storage.getUser();
+    let user = Storage.getUser();
     this.state = {
-      user,
-      isChangeDialogOpen: false,
-      isComfirmDialogOpen: false,
-      newPhone: user.phone,
-      newEmail: user.email
-    };
-  }
-
-  componentWillMount() {
-    const token = Storage.getToken();
-    const { dispatch } = this.props;
-    if (!token) {
-      dispatch(push('/'));
-    } else {
-      dispatch({
-        type: CHANGE_TITLE,
-        title: '账号信息'
-      });
+      newUser: Object.assign({}, user),
+      isComfirmDialogOpen: false
     }
   }
 
-  changeContact = () => {
-    const token = Storage.getToken();
+  componentWillMount() {
+    const user = Storage.getUser();
     const { dispatch } = this.props;
-    const { newPhone, newEmail, user } = this.state;
-    fetch(`${HOST}/users/${user._id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': `bearer ${token}`
-      },
-      body: JSON.stringify({
-        user: {
-          phone: newPhone,
-          email: newEmail
-        }
-      })
-    }).then(response => {
-
-      // 更新token时间戳
-      Storage.updateTokenTime();
-      if (response.status === 200) {
-        this.setState({
-          isChangeDialogOpen: false,
-          isComfirmDialogOpen: false
-        });
-        dispatch({
-          type: OPEN_SNACKBAR,
-          snackbarText: '修改成功！'
-        });
-        const newUser = Object.assign({}, user, {
-          phone: newPhone,
-          email: newEmail
-        });
-        Storage.setUser(newUser);
-        this.setState({
-          user: newUser
-        });
-      } else {
-        this.setState({
-          isChangeDialogOpen: false,
-          isComfirmDialogOpen: false
-        });
-        dispatch({
-          type: OPEN_SNACKBAR,
-          snackbarText: '修改失败！'
-        });
+    dispatch({
+      type: CONFIG_APPBAR,
+      appbarConfig: {
+        title: user.name,
+        isAppbarOpen: true,
+        appbarLeftElement: <ReturnIconButton href="/admin" />,
+        appbarRightElement: null
       }
-    }, error => {
-      this.setState({
-        isChangeDialogOpen: false,
-        isComfirmDialogOpen: false
-      });
-      dispatch({
-        type: OPEN_SNACKBAR,
-        snackbarText: '网络错误！'
-      });
     });
   }
 
-  setNewEmail = event => {
+  setName = event => {
     this.setState({
-      newEmail: event.target.value
+      newUser: Object.assign({}, this.state.newUser, {
+        name: event.target.value
+      })
     });
   }
 
-  setNewPhone = event => {
+  setEmail = event => {
     this.setState({
-      newPhone: event.target.value
+      newUser: Object.assign({}, this.state.newUser, {
+        email: event.target.value
+      })
     });
   }
 
-  openChangeDialog = () => {
+  setPhone = event => {
     this.setState({
-      isChangeDialogOpen: true
-    });
-  }
-
-  closeChangeDialog = () => {
-    this.setState({
-      isChangeDialogOpen: false
+      newUser: Object.assign({}, this.state.newUser, {
+        phone: event.target.value
+      })
     });
   }
 
   openComfirmDialog = () => {
-    const { user, newPhone, newEmail } = this.state;
-    const { dispatch } = this.props;
-    if (!newPhone) {
-      dispatch({
-        type: OPEN_SNACKBAR,
-        snackbarText: '请输入新的电话号码！'
-      });
-    } else if (!newEmail) {
-      dispatch({
-        type: OPEN_SNACKBAR,
-        snackbarText: '请输入新的电子邮箱！'
-      });
-    } else if (user.phone === newPhone && user.email === newEmail) {
-      this.closeChangeDialog();
-    } else if (!/[0-9]{7,}/.test(newPhone)) {
-      dispatch({
-        type: OPEN_SNACKBAR,
-        snackbarText: '电话号码格式不正确！'
-      });
-    } else if (!/[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/.test(newEmail)) {
-      dispatch({
-        type: OPEN_SNACKBAR,
-        snackbarText: '电子邮箱格式不正确！'
-      });
-    } else {
-      this.setState({
-        isChangeDialogOpen: false,
-        isComfirmDialogOpen: true
-      });
-    }
+    this.setState({
+      isComfirmDialogOpen: true
+    });
   }
 
   closeComfirmDialog = () => {
     this.setState({
-      isChangeDialogOpen: true,
       isComfirmDialogOpen: false
     });
   }
 
+  judgeChange = () => {
+    const { newUser } = this.state;
+    const user = Storage.getUser();
+    const { dispatch } = this.props;
+    let isChangeProfile = false;
+    for (let key in newUser) {
+      if((typeof newUser[key]).toLowerCase() === 'object'){
+        continue;
+      }
+      if (newUser[key] !== user[key]) {
+        isChangeProfile = true;
+        break;
+      }
+    }
+    if (isChangeProfile) {
+      this.openComfirmDialog();
+    } else {
+      dispatch(push('/admin'));
+    }
+  }
+
+  openLoadingDialog = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: OPEN_LOADING_DIALOG
+    });
+  }
+
+  closeLoadingDialog = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: CLOSE_LOADING_DIALOG
+    });
+  }
+
+  changeProfile = () => {
+    const { dispatch } = this.props;
+    this.closeComfirmDialog();
+    this.openLoadingDialog();
+    setTimeout(() => {
+      this.closeLoadingDialog();
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '修改成功'
+      });
+      dispatch(push('/admin'));
+    }, 1000);
+  }
+
   render() {
-    const { user, isChangeDialogOpen, isComfirmDialogOpen, newPhone, newEmail } = this.state;
+    let { newUser } = this.state;
+    let { isComfirmDialogOpen } = this.state;
     return (
-      <div style={{
-        maxWidth: 400,
-        margin: '10px auto 30px auto',
-        padding: '10px 30px'
-      }} className="leftIn">
-        <TextField fullWidth floatingLabelText="账号" value={user.account} disabled />
-        <TextField fullWidth floatingLabelText="学校" value={user.university || '未录入'} disabled />
-        <TextField fullWidth floatingLabelText="学院或系" value={user.school || '未录入'} disabled />
-        <TextField fullWidth floatingLabelText="电话" value={user.phone || '未设置'} disabled />
-        <TextField fullWidth floatingLabelText="邮箱" value={user.email || '未设置'} disabled />
+      <div className="leftIn" style={{
+        margin: '80px auto 30px auto',
+        maxWidth: 450,
+        padding: '0 20px'
+      }}>
+        <TextField fullWidth floatingLabelText="账号" value={newUser.account} disabled />
+        <TextField fullWidth onChange={this.setName} floatingLabelText="姓名" value={newUser.name}/>
+        <TextField fullWidth disabled floatingLabelText="学校" value={newUser.university} />
+        <TextField fullWidth disabled floatingLabelText="学院" value={newUser.school} />
+        <TextField onChange={this.setEmail} fullWidth floatingLabelText="电子邮箱" value={newUser.email} />
+        <TextField onChange={this.setPhone} fullWidth floatingLabelText="联系电话" value={newUser.phone} />
         <div style={{
-          textAlign: 'center',
-          margin: '20px 0 0 20px'
+          marginTop: 20,
+          textAlign: 'center'
         }}>
+          <RaisedButton onTouchTap={this.judgeChange} primary label="保存" />
+          &nbsp;&nbsp;&nbsp;
           <Link to="/admin/change-password"><RaisedButton primary label="修改密码" /></Link>
-          &nbsp;
-          <RaisedButton primary label="修改联系方式" onTouchTap={this.openChangeDialog} />
         </div>
         <Dialog
-          title="修改联系方式"
-          actions={[<FlatButton onTouchTap={this.closeChangeDialog} label="取消" />, <FlatButton secondary label="确认" onTouchTap={this.openComfirmDialog} />]}
-          open={isChangeDialogOpen}
-          onRequestClose={this.closeChangeDialog}
-          >
-          <TextField onChange={this.setNewPhone} fullWidth floatingLabelText="电话" value={newPhone || ''} />
-          <TextField onChange={this.setNewEmail} fullWidth floatingLabelText="邮箱" value={newEmail || ''} />
-        </Dialog>
-        <Dialog
-          actions={[<FlatButton keyboardFocused onTouchTap={this.closeComfirmDialog} label="取消" />, <FlatButton secondary onTouchTap={this.changeContact} label="确认" />]}
+          actions={[<FlatButton onTouchTap={this.closeComfirmDialog} label="取消" />, <FlatButton secondary onTouchTap={this.changeProfile} label="确认" />]}
+          modal={false}
           open={isComfirmDialogOpen}
           onRequestClose={this.closeComfirmDialog}
-          >确定修改联系方式?</Dialog>
+          >确定修改个人资料吗?</Dialog>
       </div>
     );
   }
@@ -207,7 +164,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     dispatch
-  }
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminProfile);

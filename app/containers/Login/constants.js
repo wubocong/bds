@@ -1,0 +1,1 @@
+export const RECORD_PASSWORD = 'bds/login/RECORD_PASSWORD';

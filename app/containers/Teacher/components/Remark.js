@@ -8,9 +8,10 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 
-import { CONFIG_APPBAR, OPEN_LOADING_DIALOG, CLOSE_LOADING_DIALOG } from '../../App/constants';
+import Storage from '../../../models/Storage';
+import { CONFIG_APPBAR, OPEN_SNACKBAR, OPEN_LOADING_DIALOG, CLOSE_LOADING_DIALOG } from '../../App/constants';
 import LoadingButton from '../../../components/LoadingButton';
-import { OPEN_SNACKBAR } from '../../App/constants';
+import { HOST } from '../../../constants';
 
 import test_paper from '../../../test_data/teacher_remark';
 
@@ -38,11 +39,32 @@ class Remark extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        paper: test_paper
+    let { paperId } = this.props.location.query;
+    let token = Storage.getToken();
+    fetch(`${HOST}/papers/final/${paperId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: 'bearer ' + token
+      }
+    }).then(response => {
+      if (response.status === 200) {
+        response.json().then(json => {
+          this.setState({
+            paper: json
+          });
+        });
+      } else {
+        dispatch({
+          type: OPEN_SNACKBAR,
+          snackbarText: '错误！请刷新！'
+        });
+      }
+    }, error => {
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '网络错误！请刷新！'
       });
-    }, 2000);
+    });
   }
 
   openLoadingDialog = () => {
@@ -62,7 +84,7 @@ class Remark extends Component {
   setFinalScore = event => {
     this.setState({
       paper: Object.assign({}, this.state.paper, {
-        finalScore: parseInt(event.target.value)
+        finalScore: parseInt(event.target.value || 0)
       })
     });
   }
@@ -99,8 +121,6 @@ class Remark extends Component {
     });
   }
 
-
-
   beforeUpload = () => {
     const { paper } = this.state;
     const { dispatch } = this.props;
@@ -122,27 +142,53 @@ class Remark extends Component {
   upload = () => {
     this.closeComfirmDialog();
     this.openLoadingDialog();
-    setTimeout(() => {
-      this.closeLoadingDialog();
-      const { dispatch } = this.props;
+    let { defenseId, studentName, studentAccount, paperName, guideTeacher, paperId } = this.props.location.query;
+    let token = Storage.getToken();
+    let { dispatch } = this.props;
+    let { finalScore, remark } = this.state.paper;
+    fetch(`${HOST}/papers/final/${paperId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: 'bearer ' + token
+      },
+      body: JSON.stringify({
+        paper: {
+          finalScore,
+          remark
+        }
+      })
+    }).then(response => {
+      if (response.status === 200) {
+        dispatch({
+          type: OPEN_SNACKBAR,
+          snackbarText: '完成评分！'
+        });
+        dispatch(push(`/teacher/result?studentAccount=${studentAccount}&studentName=${studentName}&paperId=${paperId}&paperName=${paperName}&guideTeacher=${guideTeacher}&defenseId=${defenseId}`));
+      } else {
+        dispatch({
+          type: OPEN_SNACKBAR,
+          snackbarText: '请重试！'
+        });
+      }
+    }, error => {
       dispatch({
         type: OPEN_SNACKBAR,
-        snackbarText: '完成评分！'
+        snackbarText: '网络错误！请重试！'
       });
-      let { defenseId, studentName, studentAccount, paperName, guideTeacher, paperId } = this.props.location.query;
-      dispatch(push(`/teacher/result?studentAccount=${studentAccount}&studentName=${studentName}&paperId=${paperId}&paperName=${paperName}&guideTeacher=${guideTeacher}&defenseId=${defenseId}`));
-    }, 2000);
+    });
+    this.closeLoadingDialog();
   }
 
   returnEvaluate = () => {
-    this.closeReturnDialog();
-    this.openLoadingDialog();
-    setTimeout(() => {
-      this.closeLoadingDialog();
-      const { dispatch } = this.props;
-      const { studentName, studentAccount, paperName, guideTeacher, paperId, defenseId, leaderId } = this.props.location.query;
-      dispatch(push(`/teacher/evaluate?studentAccount=${studentAccount}&studentName=${studentName}&paperId=${paperId}&paperName=${paperName}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
-    }, 1000);
+    // this.closeReturnDialog();
+    // this.openLoadingDialog();
+    // fetch()
+    // setTimeout(() => {
+    //   this.closeLoadingDialog();
+    //   const { dispatch } = this.props;
+    //   const { studentName, studentAccount, paperName, guideTeacher, paperId, defenseId, leaderId } = this.props.location.query;
+    //   dispatch(push(`/teacher/evaluate?studentAccount=${studentAccount}&studentName=${studentName}&paperId=${paperId}&paperName=${paperName}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
+    // }, 1000);
   }
 
   render() {
@@ -165,31 +211,31 @@ class Remark extends Component {
       for (let key in ITEM_NAME) {
         let table = [];
         table.push(<TableRowColumn>{ITEM_NAME[key]}</TableRowColumn>);
-        for (let scope of paper.scopes) {
+        for (let score of paper.scores) {
 
           table.push(<TableRowColumn style={{
-            color: colors[scope.items[key]]
-          }}>{evaluates[scope.items[key]]}</TableRowColumn>);
+            color: colors[score.items[key]]
+          }}>{evaluates[score.items[key]]}</TableRowColumn>);
         }
         tables.push(table);
       }
       let finalTable = [<TableRowColumn>评分</TableRowColumn>];
-      for (let scope of paper.scopes) {
+      for (let score of paper.scores) {
         let color;
-        if (scope.sum >= 90) {
+        if (score.sum >= 90) {
           color = 'green';
-        } else if (scope.sum >= 80) {
+        } else if (score.sum >= 80) {
           color = 'blue';
-        } else if (scope.sum >= 70) {
+        } else if (score.sum >= 70) {
           color = 'orange';
-        } else if (scope.sum >= 60) {
+        } else if (score.sum >= 60) {
           color = 'pink';
         } else {
           color = 'red';
         }
         finalTable.push(<TableRowColumn style={{
           color: color
-        }}>{scope.sum}</TableRowColumn>);
+        }}>{score.sum}</TableRowColumn>);
       }
       tables.push(finalTable);
     }
@@ -226,8 +272,8 @@ class Remark extends Component {
               <TableHeader displaySelectAll={false} >
                 <TableRow>
                   <TableHeaderColumn>评分项</TableHeaderColumn>
-                  {paper.scopes.map((scope, index) => {
-                    return <TableHeaderColumn key={index}>{scope.teacher.name}</TableHeaderColumn>;
+                  {paper.scores.map((score, index) => {
+                    return <TableHeaderColumn key={index}>{score.teacher.name}</TableHeaderColumn>;
                   })}
                 </TableRow>
               </TableHeader>
@@ -246,7 +292,7 @@ class Remark extends Component {
             <div style={{
               margin: '20px 0'
             }}>
-              <TextField onChange={this.setFinalScore} fullWidth floatingLabelText="最终成绩" value={paper.finalScore}/>
+              <TextField onChange={this.setFinalScore} fullWidth floatingLabelText="最终成绩" value={paper.finalScore} />
             </div>
             <textarea onChange={this.setRemark} value={paper.remark} style={{
               width: '100%',

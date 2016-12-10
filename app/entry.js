@@ -21,6 +21,7 @@ import StudentUpload from './containers/Student/components/StudentUpload';
 import Teacher from './containers/Teacher/Teacher';
 import TeacherOperation from './containers/Teacher/components/TeacherOperation';
 import TeacherProfile from './containers/Teacher/components/TeacherProfile';
+import TeacherGuidanceList from './containers/Teacher/components/TeacherGuidanceList';
 import TeacherGuidance from './containers/Teacher/components/TeacherGuidance';
 import Defense from './containers/Teacher/components/Defense';
 import Evaluate from './containers/Teacher/components/Evaluate';
@@ -61,6 +62,7 @@ ReactDOM.render(
             <IndexRoute component={TeacherOperation} />
             <Route path="/teacher/profile" component={TeacherProfile} />
             <Route path="/teacher/change-password" component={ChangePassword} />
+            <Route path="/teacher/guidance-list" component={TeacherGuidanceList} />
             <Route path="/teacher/guidance" component={TeacherGuidance} />
             <Route path="/teacher/defense" component={Defense} />
             <Route path="/teacher/evaluate" component={Evaluate} />

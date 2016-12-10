@@ -168,7 +168,7 @@ class TeacherProfile extends Component {
           <MenuItem value={true} primaryText="男" />
           <MenuItem value={false} primaryText="女" />
         </SelectField>
-        <SelectField onChange={this.setPosTitle} floatingLabelText="职称" value={newUser.posTitle} style={{
+        <SelectField onChange={this.setPosTitle} floatingLabelText="职称" value={newUser.posTitle || 0} style={{
           width: '50%',
           verticalAlign: 'bottom'
         }}>
@@ -178,7 +178,7 @@ class TeacherProfile extends Component {
           <MenuItem value="1" primaryText="助教" />
           <MenuItem value="0" primaryText="无" />
         </SelectField>
-        <SelectField onChange={this.setProTitle} floatingLabelText="学历" value={newUser.proTitle} style={{
+        <SelectField onChange={this.setProTitle} floatingLabelText="学历" value={newUser.proTitle || 0} style={{
           width: '50%',
           verticalAlign: 'bottom'
         }}>

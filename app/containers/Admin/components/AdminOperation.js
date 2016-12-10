@@ -1,71 +1,94 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
-import { Link } from 'react-router';
 import Paper from 'material-ui/Paper';
-import FlatButton from 'material-ui/FlatButton';
-import IconButton from 'material-ui/IconButton'
+import { Link } from 'react-router';
 
-import Storage from '../../../models/Storage';
-import { CHANGE_TITLE } from '../../App/constants';
+import UserMenu from '../../../components/UserMenu';
+import HomeIconButton from '../../../components/HomeIconButton';
+import { CONFIG_APPBAR } from '../../App/constants';
 import { SYSTEM_NAME } from '../../../constants';
+import WriteIcon from '../../../images/write.png';
 import ArrowRightIcon from '../../../images/arrow-right.png';
-
-const linkStyle = {
-  textDecoration: 'none'
-};
-const paperStyle = {
-  display: 'block',
-  width: '100%',
-  fontSize: '1.1rem',
-  padding: 20,
-  lineHeight: '1.65rem',
-  margin: '20px 0',
-  position: 'relative'
-}
-const imgStyle = {
-  position: 'absolute',
-  right: '20px',
-  top: '7px'
-};
 
 class AdminOperation extends Component {
 
   componentWillMount() {
-    const token = Storage.getToken();
     const { dispatch } = this.props;
-    if (!token) {
-      dispatch(push('/'));
-    } else {
-      dispatch({
-        type: CHANGE_TITLE,
-        title: SYSTEM_NAME
-      });
-    }
+    dispatch({
+      type: CONFIG_APPBAR,
+      appbarConfig: {
+        title: SYSTEM_NAME,
+        isAppbarOpen: true,
+        appbarLeftElement: <HomeIconButton href="/admin" />,
+        appbarRightElement: <UserMenu />
+      }
+    });
   }
 
   render() {
     return (
       <div className="rightIn" style={{
-        maxWidth: 400,
-        margin: '30px auto'
+        margin: '90px auto 30px auto',
+        maxWidth: 450
       }}>
-        <Link to="/admin/manage-teacher" style={linkStyle}>
-          <Paper zDepth={2} style={paperStyle}>
-            管理教师信息
-          <IconButton tooltip="进入" style={imgStyle}><img src={ArrowRightIcon} /></IconButton>
+        <Link to="/admin/manage-defense" style={{
+          textDecoration: 'none'
+        }}>
+          <Paper zDepth={3} style={{
+            padding: 20,
+            display: 'flex',
+            alignItems: 'center',
+            position: 'relative',
+            margin: '20px 0'
+          }}>
+            <img src={WriteIcon} />
+            &nbsp;
+            <div>管理答辩场次</div>
+            <img src={ArrowRightIcon} style={{
+              position: 'absolute',
+              right: 20,
+              top: 20
+            }} />
           </Paper>
         </Link>
-        <Link to="/admin/manage-student" style={linkStyle}>
-          <Paper zDepth={2} style={paperStyle}>
-            管理学生信息
-          <IconButton tooltip="进入" style={imgStyle}><img src={ArrowRightIcon} /></IconButton>
+        <Link to="/admin/manage-teacher" style={{
+          textDecoration: 'none'
+        }}>
+          <Paper zDepth={3} style={{
+            padding: 20,
+            display: 'flex',
+            alignItems: 'center',
+            position: 'relative',
+            margin: '20px 0'
+          }}>
+            <img src={WriteIcon} />
+            &nbsp;
+            <div>管理教师信息</div>
+            <img src={ArrowRightIcon} style={{
+              position: 'absolute',
+              right: 20,
+              top: 20
+            }} />
           </Paper>
         </Link>
-        <Link to="/admin/manage-defense" style={linkStyle}>
-          <Paper zDepth={2} style={paperStyle}>
-            安排答辩场次
-          <IconButton tooltip="进入" style={imgStyle}><img src={ArrowRightIcon} /></IconButton>
+        <Link to="/admin/manage-student" style={{
+          textDecoration: 'none'
+        }}>
+          <Paper zDepth={3} style={{
+            padding: 20,
+            display: 'flex',
+            alignItems: 'center',
+            position: 'relative',
+            margin: '20px 0'
+          }}>
+            <img src={WriteIcon} />
+            &nbsp;
+            <div>管理学生信息</div>
+            <img src={ArrowRightIcon} style={{
+              position: 'absolute',
+              right: 20,
+              top: 20
+            }} />
           </Paper>
         </Link>
       </div>
@@ -75,7 +98,7 @@ class AdminOperation extends Component {
 
 const mapStateToProps = state => {
   return {};
-}
+};
 const mapDispatchToProps = dispatch => {
   return {
     dispatch

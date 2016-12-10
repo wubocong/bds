@@ -6,6 +6,9 @@ import { CONFIG_APPBAR } from '../../App/constants';
 import LoadingButton from '../../../components/LoadingButton';
 import LoadingIcon from '../../../images/loading48.png';
 import Storage from '../../../models/Storage';
+import { HOST } from '../../../constants';
+
+let timer;
 
 class ResultLoading extends Component {
 
@@ -25,14 +28,36 @@ class ResultLoading extends Component {
   componentDidMount() {
     const {leaderId, paperId, studentName, studentAccount, paperName, guideTeacher, defenseId } = this.props.location.query;
     const user = Storage.getUser();
+    const token = Storage.getToken();
     const { dispatch } = this.props;
-    setTimeout(() => {
-      if (user._id === leaderId) {
-        dispatch(push(`/teacher/remark?paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&studentAccount=${studentAccount}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
-      } else {
-        dispatch(push(`/teacher/result?paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&studentAccount=${studentAccount}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
-      }
-    }, 2000);
+    timer = setInterval(() => {
+      fetch(`${HOST}/papers/final/${paperId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'bearer ' + token
+        }
+      }).then(response => {
+        if (response.status === 200) {
+          response.json().then(json => {
+            if (!json.waiting) {
+              if (user._id === leaderId) {
+                dispatch(push(`/teacher/remark?paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&studentAccount=${studentAccount}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
+              } else {
+                dispatch(push(`/teacher/result?paperId=${paperId}&studentName=${studentName}&paperName=${paperName}&studentAccount=${studentAccount}&guideTeacher=${guideTeacher}&defenseId=${defenseId}&leaderId=${leaderId}`));
+              }
+            }
+          });
+        } else {
+
+        }
+      }, error => {
+
+      });
+    }, 3500);
+  }
+
+  componentWillUnmount(){
+    clearInterval(timer);
   }
 
   render() {

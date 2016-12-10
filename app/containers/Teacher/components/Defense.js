@@ -42,11 +42,32 @@ class Defense extends Component {
     const defenseId = this.props.location.query.defenseId;
     const token = Storage.getToken();
     const { dispatch } = this.props;
-    setTimeout(() => {
-      this.setState({
-        defense: test_defense
+    fetch(`${HOST}/defenses/detail/${defenseId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `bearer ${token}`
+      }
+    }).then(response => {
+      if (response.status === 200) {
+        response.json().then(json => {
+          this.setState({
+            defense: json.defense
+          });
+        });
+      } else {
+        dispatch({
+          type: OPEN_SNACKBAR,
+          snackbarText: '该场答辩不存在！'
+        });
+        dispatch(push('/teacher'));
+      }
+    }, error => {
+      dispatch({
+        type: OPEN_SNACKBAR,
+        snackbarText: '网络错误！'
       });
-    }, 500);
+      dispatch(push('/teacher'));
+    });
   }
 
   quit = () => {

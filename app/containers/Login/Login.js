@@ -9,6 +9,7 @@ import FlatButton from 'material-ui/FlatButton';
 
 import HomeIconButton from '../../components/HomeIconButton';
 import { OPEN_SNACKBAR, CONFIG_APPBAR, OPEN_LOADING_DIALOG, CLOSE_LOADING_DIALOG } from '../App/constants';
+import { RECORD_PASSWORD } from './constants';
 import { HOST, SYSTEM_NAME } from '../../constants';
 import Storage from '../../models/Storage';
 
@@ -23,9 +24,8 @@ class Login extends Component {
 
     super(props);
     this.state = {
-      account: 'ls',
-      password: 'ls',
-      role: 'teacher'
+      account: '',
+      role: ''
     };
   }
 
@@ -56,7 +56,9 @@ class Login extends Component {
   }
 
   setPassword = event => {
-    this.setState({
+    const { dispatch } = this.props;
+    dispatch({
+      type: RECORD_PASSWORD,
       password: event.target.value
     });
   }
@@ -83,7 +85,8 @@ class Login extends Component {
 
   loginAuth = () => {
     const { dispatch } = this.props;
-    const { account, password, role } = this.state;
+    const { account, role } = this.state;
+    const { password } = this.props;
 
     if (!account) {
       dispatch({
@@ -157,16 +160,23 @@ class Login extends Component {
     }
   }
 
+  keyLogin = event => {
+    if(event.keyCode === 13){
+      this.loginAuth();
+    }
+  }
+
   render() {
-    const { account, password, role, isLogining } = this.state;
+    const { account, role, isLogining } = this.state;
+    const { password } = this.props;
     return (
       <div className="rightIn" style={{
         maxWidth: 400,
         padding: 20,
         margin: '80px auto 30px auto'
       }}>
-        <TextField floatingLabelText="账号" value={account} fullWidth className="text-field" onChange={this.setAccount} />
-        <TextField type="password" floatingLabelText="密码" value={password} fullWidth className="text-field" onChange={this.setPassword} />
+        <TextField onKeyDown={this.keyLogin} floatingLabelText="账号" value={account} fullWidth className="text-field" onChange={this.setAccount} />
+        <TextField onKeyDown={this.keyLogin} type="password" floatingLabelText="密码" value={password} fullWidth className="text-field" onChange={this.setPassword} />
         <RadioButtonGroup name="role" defaultSelected={role} style={{
           margin: '20px 0'
         }} onChange={this.setRole}>
@@ -187,7 +197,7 @@ class Login extends Component {
 
 const mapStateToProps = state => {
   return {
-
+    password: state.login.password
   };
 };
 const mapDispathToProps = dispatch => {
